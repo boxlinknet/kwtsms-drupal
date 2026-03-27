@@ -1,0 +1,9 @@
+id: otp_login
+label: 'OTP Login'
+category: authentication
+body_en: 'Your login code for [site:name] is: [kwtsms:otp-code]. Valid for 5 minutes.'
+body_ar: 'رمز الدخول لـ [site:name] هو: [kwtsms:otp-code]. صالح لمدة 5 دقائق.'
+default_body_en: 'Your login code for [site:name] is: [kwtsms:otp-code]. Valid for 5 minutes.'
+default_body_ar: 'رمز الدخول لـ [site:name] هو: [kwtsms:otp-code]. صالح لمدة 5 دقائق.'
+recipient_type: customer
+system: true

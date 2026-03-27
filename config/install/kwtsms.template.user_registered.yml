@@ -1,0 +1,9 @@
+id: user_registered
+label: 'User Registered'
+category: notifications
+body_en: 'Welcome to [site:name], [user:display-name]. Your account is active.'
+body_ar: 'مرحبا بك في [site:name]، [user:display-name]. حسابك مفعل.'
+default_body_en: 'Welcome to [site:name], [user:display-name]. Your account is active.'
+default_body_ar: 'مرحبا بك في [site:name]، [user:display-name]. حسابك مفعل.'
+recipient_type: customer
+system: true

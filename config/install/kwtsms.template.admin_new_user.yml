@@ -1,0 +1,9 @@
+id: admin_new_user
+label: 'Admin: New User'
+category: admin_alerts
+body_en: 'New registration on [site:name]: [user:display-name] ([user:mail])'
+body_ar: 'تسجيل جديد على [site:name]: [user:display-name] ([user:mail])'
+default_body_en: 'New registration on [site:name]: [user:display-name] ([user:mail])'
+default_body_ar: 'تسجيل جديد على [site:name]: [user:display-name] ([user:mail])'
+recipient_type: admin
+system: true
