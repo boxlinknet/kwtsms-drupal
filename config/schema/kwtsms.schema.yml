@@ -1,0 +1,93 @@
+kwtsms.settings:
+  type: config_object
+  label: 'kwtSMS settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Global SMS on/off switch'
+    test_mode:
+      type: boolean
+      label: 'Test mode (test=1, no delivery)'
+    debug_logging:
+      type: boolean
+      label: 'Debug logging enabled'
+    default_country_code:
+      type: string
+      label: 'Default country code for local numbers'
+    sender_id:
+      type: string
+      label: 'Active sender ID'
+    api_username:
+      type: string
+      label: 'API username'
+    sms_language:
+      type: string
+      label: 'Outgoing SMS language (auto, en, ar)'
+    otp_mode:
+      type: string
+      label: 'OTP mode (disabled, primary, 2fa)'
+    otp_roles:
+      type: sequence
+      label: 'Roles with OTP enabled'
+      sequence:
+        type: string
+        label: 'Role ID'
+    password_reset_mode:
+      type: string
+      label: 'Password reset mode (email_only, sms_only, email_sms)'
+    otp_per_phone_hour:
+      type: integer
+      label: 'Max OTP requests per phone per hour'
+    otp_per_ip_hour:
+      type: integer
+      label: 'Max OTP requests per IP per hour'
+    otp_lockout_attempts:
+      type: integer
+      label: 'Failed attempts before lockout'
+    otp_lockout_minutes:
+      type: integer
+      label: 'Lockout duration in minutes'
+    otp_resend_cooldown:
+      type: integer
+      label: 'Seconds between OTP resends'
+    notify_user_registered_customer:
+      type: boolean
+      label: 'SMS to customer on registration'
+    notify_user_registered_admin:
+      type: boolean
+      label: 'SMS to admin on registration'
+    admin_phones:
+      type: string
+      label: 'Admin phone numbers (comma-separated)'
+
+kwtsms.template.*:
+  type: config_entity
+  label: 'kwtSMS Template'
+  mapping:
+    id:
+      type: string
+      label: 'Machine name'
+    label:
+      type: label
+      label: 'Label'
+    category:
+      type: string
+      label: 'Category'
+    body_en:
+      type: text
+      label: 'Body (English)'
+    body_ar:
+      type: text
+      label: 'Body (Arabic)'
+    default_body_en:
+      type: text
+      label: 'Default body (English)'
+    default_body_ar:
+      type: text
+      label: 'Default body (Arabic)'
+    recipient_type:
+      type: string
+      label: 'Recipient type (customer, admin, both)'
+    system:
+      type: boolean
+      label: 'System template flag'
