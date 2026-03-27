@@ -28,3 +28,51 @@ function kwtsms_help(string $route_name, RouteMatchInterface $route_match): stri
   }
   return '';
 }
+
+/**
+ * Implements hook_token_info().
+ */
+function kwtsms_token_info(): array {
+  $types['kwtsms'] = [
+    'name' => t('kwtSMS'),
+    'description' => t('Tokens related to kwtSMS.'),
+  ];
+  $tokens['kwtsms']['otp-code'] = [
+    'name' => t('OTP Code'),
+    'description' => t('The one-time password code.'),
+  ];
+  $tokens['kwtsms']['sender-id'] = [
+    'name' => t('Sender ID'),
+    'description' => t('The active kwtSMS sender ID.'),
+  ];
+  $tokens['kwtsms']['balance'] = [
+    'name' => t('Balance'),
+    'description' => t('Current kwtSMS account balance.'),
+  ];
+  return ['types' => $types, 'tokens' => $tokens];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function kwtsms_tokens(string $type, array $tokens, array $data, array $options): array {
+  $replacements = [];
+  if ($type === 'kwtsms') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'sender-id':
+          $replacements[$original] = \Drupal::config('kwtsms.settings')->get('sender_id') ?: 'KWT-SMS';
+          break;
+        case 'balance':
+          $gateway = \Drupal::service('kwtsms.gateway');
+          $balance = $gateway->getCachedValue('balance');
+          $replacements[$original] = $balance['available'] ?? '0';
+          break;
+        case 'otp-code':
+          $replacements[$original] = $data['kwtsms_otp_code'] ?? '[OTP]';
+          break;
+      }
+    }
+  }
+  return $replacements;
+}
