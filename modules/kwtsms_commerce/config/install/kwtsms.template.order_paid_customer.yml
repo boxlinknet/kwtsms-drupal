@@ -1,0 +1,9 @@
+id: order_paid_customer
+label: 'Order Paid (Customer)'
+category: commerce
+body_en: 'Payment received for order #[commerce_order:order-number]. Thank you!'
+body_ar: 'تم استلام الدفع للطلب #[commerce_order:order-number]. شكرا لك!'
+default_body_en: 'Payment received for order #[commerce_order:order-number]. Thank you!'
+default_body_ar: 'تم استلام الدفع للطلب #[commerce_order:order-number]. شكرا لك!'
+recipient_type: customer
+system: true

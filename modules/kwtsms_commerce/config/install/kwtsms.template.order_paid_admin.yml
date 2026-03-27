@@ -1,0 +1,9 @@
+id: order_paid_admin
+label: 'Order Paid (Admin)'
+category: commerce
+body_en: 'Payment received: order #[commerce_order:order-number] from [commerce_order:billing-profile:entity:address:given_name], [commerce_order:total-price:formatted]'
+body_ar: 'تم استلام الدفع: طلب #[commerce_order:order-number] من [commerce_order:billing-profile:entity:address:given_name]، [commerce_order:total-price:formatted]'
+default_body_en: 'Payment received: order #[commerce_order:order-number] from [commerce_order:billing-profile:entity:address:given_name], [commerce_order:total-price:formatted]'
+default_body_ar: 'تم استلام الدفع: طلب #[commerce_order:order-number] من [commerce_order:billing-profile:entity:address:given_name]، [commerce_order:total-price:formatted]'
+recipient_type: admin
+system: true

@@ -1,0 +1,9 @@
+id: order_placed
+label: 'Order Placed'
+category: commerce
+body_en: 'Hi [commerce_order:billing-profile:entity:address:given_name], your order #[commerce_order:order-number] for [commerce_order:total-price:formatted] has been confirmed.'
+body_ar: 'مرحبا [commerce_order:billing-profile:entity:address:given_name]، طلبك #[commerce_order:order-number] بمبلغ [commerce_order:total-price:formatted] تم تأكيده.'
+default_body_en: 'Hi [commerce_order:billing-profile:entity:address:given_name], your order #[commerce_order:order-number] for [commerce_order:total-price:formatted] has been confirmed.'
+default_body_ar: 'مرحبا [commerce_order:billing-profile:entity:address:given_name]، طلبك #[commerce_order:order-number] بمبلغ [commerce_order:total-price:formatted] تم تأكيده.'
+recipient_type: customer
+system: true

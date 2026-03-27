@@ -1,0 +1,10 @@
+name: 'kwtSMS Commerce'
+type: module
+description: 'SMS notifications for Drupal Commerce orders via kwtSMS.'
+package: kwtSMS
+core_version_requirement: ^10.3 || ^11
+php: 8.2
+
+dependencies:
+  - kwtsms:kwtsms
+  - commerce:commerce_order

@@ -1,0 +1,9 @@
+id: order_status
+label: 'Order Status'
+category: commerce
+body_en: 'Your order #[commerce_order:order-number] status updated: [commerce_order:state]'
+body_ar: 'طلبك #[commerce_order:order-number] تم تحديث حالته: [commerce_order:state]'
+default_body_en: 'Your order #[commerce_order:order-number] status updated: [commerce_order:state]'
+default_body_ar: 'طلبك #[commerce_order:order-number] تم تحديث حالته: [commerce_order:state]'
+recipient_type: customer
+system: true

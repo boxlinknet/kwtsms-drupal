@@ -1,0 +1,14 @@
+<?php
+
+/**
+ * @file
+ * Primary module file for kwtSMS Commerce.
+ *
+ * Provides order SMS notifications via kwtSMS for Drupal Commerce.
+ *
+ * Related files:
+ *   - src/EventSubscriber/OrderEventSubscriber.php
+ *   - kwtsms_commerce.services.yml
+ */
+
+declare(strict_types=1);

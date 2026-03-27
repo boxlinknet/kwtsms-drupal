@@ -1,0 +1,11 @@
+services:
+  kwtsms_commerce.order_event_subscriber:
+    class: Drupal\kwtsms_commerce\EventSubscriber\OrderEventSubscriber
+    arguments:
+      - '@kwtsms.gateway'
+      - '@kwtsms.template_renderer'
+      - '@kwtsms.logger'
+      - '@config.factory'
+      - '@entity_type.manager'
+    tags:
+      - { name: event_subscriber }
