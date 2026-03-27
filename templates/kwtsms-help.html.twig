@@ -1,0 +1,43 @@
+{#
+/**
+ * @file
+ * Template for the kwtSMS Help page.
+ *
+ * No variables are required; this is a static informational page.
+ */
+#}
+<div class="kwtsms-help">
+
+  <h2>{{ 'Getting Started'|t }}</h2>
+  <ol>
+    <li>{{ 'Sign up for an account at'|t }} <a href="https://kwtsms.com" target="_blank" rel="noopener noreferrer">kwtsms.com</a>.</li>
+    <li>{{ 'Obtain your API credentials (username and password) from the kwtSMS dashboard.'|t }}</li>
+    <li>{{ 'Go to the Gateway tab, enter your credentials, and click Login to connect.'|t }}</li>
+    <li>{{ 'Configure your Sender ID in the Settings tab.'|t }}</li>
+    <li>{{ 'Enable SMS sending in the Settings tab.'|t }}</li>
+  </ol>
+
+  <h2>{{ 'Features'|t }}</h2>
+  <ul>
+    <li>{{ 'OTP Login: allow users to log in with a one-time SMS code instead of a password.'|t }}</li>
+    <li>{{ 'Two-Factor Authentication (2FA): add a second verification step after password login.'|t }}</li>
+    <li>{{ 'Password Reset: let users reset their password via an SMS code.'|t }}</li>
+    <li>{{ 'User Registration Alerts: notify customers and admins when a new account is created.'|t }}</li>
+    <li>{{ 'Commerce Order Alerts: send SMS notifications on order placement, completion, or cancellation (requires kwtSMS Commerce submodule).'|t }}</li>
+  </ul>
+
+  <h2>{{ 'Sender ID'|t }}</h2>
+  <p>
+    {{ 'The Sender ID is the name or number that appears as the sender on the recipient\'s phone.'|t }}
+    {{ 'The default KWT-SMS sender ID is for testing purposes only and may not be available in production.'|t }}
+    {{ 'To register a custom Sender ID for your business, visit'|t }}
+    <a href="https://kwtsms.com/sender-id-help.html" target="_blank" rel="noopener noreferrer">kwtsms.com/sender-id-help.html</a>.
+  </p>
+
+  <h2>{{ 'Support'|t }}</h2>
+  <ul>
+    <li><a href="https://kwtsms.com/support.html" target="_blank" rel="noopener noreferrer">{{ 'Contact Support'|t }}</a></li>
+    <li><a href="https://kwtsms.com/faq_all.php" target="_blank" rel="noopener noreferrer">{{ 'Frequently Asked Questions'|t }}</a></li>
+  </ul>
+
+</div>
