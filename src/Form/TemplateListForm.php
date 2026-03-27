@@ -99,7 +99,7 @@ class TemplateListForm extends FormBase {
           '#attributes' => ['class' => ['button', 'button--small']],
         ];
 
-        $actionMarkup = \Drupal::service('renderer')->renderInIsolation($actions);
+        $actionMarkup = \Drupal::service('renderer')->render($actions);
 
         if ($template->isSystem()) {
           $resetKey = 'reset_' . $id;
@@ -110,7 +110,7 @@ class TemplateListForm extends FormBase {
             '#submit' => ['::submitForm'],
             '#attributes' => ['data-template-id' => $id, 'class' => ['button', 'button--small', 'button--danger']],
           ];
-          $resetMarkup = \Drupal::service('renderer')->renderInIsolation($resetButtons[$resetKey]);
+          $resetMarkup = \Drupal::service('renderer')->render($resetButtons[$resetKey]);
           $actionMarkup .= ' ' . $resetMarkup;
         }
 

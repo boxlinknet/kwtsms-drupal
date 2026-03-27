@@ -172,3 +172,17 @@ function kwtsms_form_user_pass_alter(array &$form, \Drupal\Core\Form\FormStateIn
     ];
   }
 }
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for user entities.
+ */
+function kwtsms_user_insert(\Drupal\Core\Entity\EntityInterface $entity): void {
+  \Drupal::service('kwtsms.user_event_subscriber')->onUserInsert($entity);
+}
+
+/**
+ * Implements hook_cron().
+ */
+function kwtsms_cron(): void {
+  \Drupal::service('kwtsms.cron_subscriber')->onCron();
+}

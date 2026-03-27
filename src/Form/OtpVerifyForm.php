@@ -110,6 +110,27 @@ class OtpVerifyForm extends FormBase {
       return;
     }
 
+    // Check the purpose stored by the initiating form.
+    $purpose = $store->get('otp_purpose') ?? 'login';
+    if ($purpose === 'password_reset') {
+      $resetUid = $store->get('reset_uid');
+      $store->delete('otp_purpose');
+      $store->delete('reset_uid');
+      $store->delete('otp_phone');
+      if ($resetUid) {
+        $user = \Drupal\user\Entity\User::load($resetUid);
+        if ($user) {
+          // Generate one-time login link and redirect.
+          $url = user_pass_reset_url($user);
+          $form_state->setRedirectUrl(Url::fromUri($url));
+          return;
+        }
+      }
+      $this->messenger()->addError($this->t('Password reset failed. Please try again.'));
+      $form_state->setRedirect('user.pass');
+      return;
+    }
+
     /** @var \Drupal\user\UserInterface|null $user */
     $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
 
