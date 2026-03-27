@@ -1,0 +1,693 @@
+# Arabic translations for kwtSMS Drupal module.
+# Copyright (C) kwtSMS
+# This file is distributed under GPL-2.0-or-later.
+msgid ""
+msgstr ""
+"Project-Id-Version: kwtsms 1.0.0\n"
+"POT-Creation-Date: 2026-03-27\n"
+"PO-Revision-Date: 2026-03-27\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+
+# Permissions
+msgid "Administer kwtSMS"
+msgstr "إدارة kwtSMS"
+
+msgid "Full access to all kwtSMS configuration tabs."
+msgstr "وصول كامل لجميع إعدادات kwtSMS."
+
+msgid "Send SMS via kwtSMS"
+msgstr "إرسال رسائل SMS عبر kwtSMS"
+
+msgid "Can trigger manual SMS sends."
+msgstr "يمكنه إرسال رسائل SMS يدويا."
+
+msgid "View kwtSMS logs"
+msgstr "عرض سجلات kwtSMS"
+
+msgid "Can view the SMS logs tab."
+msgstr "يمكنه عرض صفحة السجلات."
+
+msgid "Use kwtSMS OTP login"
+msgstr "استخدام تسجيل دخول OTP عبر kwtSMS"
+
+msgid "Can use OTP or 2FA login via SMS."
+msgstr "يمكنه استخدام تسجيل الدخول بكلمة مرور لمرة واحدة."
+
+# Tab titles
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "Gateway"
+msgstr "البوابة"
+
+msgid "Templates"
+msgstr "القوالب"
+
+msgid "Integrations"
+msgstr "التكاملات"
+
+msgid "Logs"
+msgstr "السجلات"
+
+msgid "Help"
+msgstr "المساعدة"
+
+# General form labels
+msgid "Enable SMS sending"
+msgstr "تفعيل إرسال الرسائل"
+
+msgid "Test mode (test=1, no delivery)"
+msgstr "وضع الاختبار (لا يتم التسليم)"
+
+msgid "Phone Number"
+msgstr "رقم الهاتف"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "Login"
+msgstr "تسجيل الدخول"
+
+msgid "Logout"
+msgstr "تسجيل الخروج"
+
+msgid "Send Code"
+msgstr "إرسال الرمز"
+
+msgid "Verify"
+msgstr "تحقق"
+
+msgid "Verification Code"
+msgstr "رمز التحقق"
+
+msgid "Save"
+msgstr "حفظ"
+
+msgid "Send Test SMS"
+msgstr "إرسال رسالة اختبار"
+
+msgid "Sync Now"
+msgstr "مزامنة الآن"
+
+msgid "Clear All Logs"
+msgstr "مسح جميع السجلات"
+
+msgid "Export CSV"
+msgstr "تصدير CSV"
+
+msgid "Reset to Default"
+msgstr "إعادة تعيين"
+
+msgid "Add Template"
+msgstr "إضافة قالب"
+
+msgid "Login with SMS"
+msgstr "تسجيل الدخول بالرسائل"
+
+msgid "Reset via SMS"
+msgstr "إعادة تعيين عبر الرسائل"
+
+# Status messages
+msgid "Connected successfully."
+msgstr "تم الاتصال بنجاح."
+
+msgid "Disconnected from the kwtSMS gateway."
+msgstr "تم قطع الاتصال بـ kwtSMS."
+
+msgid "Login failed: @msg"
+msgstr "فشل تسجيل الدخول: @msg"
+
+msgid "Sync complete. Balance: @balance credits."
+msgstr "تمت المزامنة. الرصيد: @balance ائتمان."
+
+msgid "Sync complete."
+msgstr "تمت المزامنة."
+
+msgid "If an account exists with this phone number, a code has been sent."
+msgstr "إذا كان هناك حساب مرتبط بهذا الرقم، فقد تم إرسال رمز."
+
+msgid "If an account exists with this phone number, a reset code has been sent."
+msgstr "إذا كان هناك حساب مرتبط بهذا الرقم، فقد تم إرسال رمز إعادة تعيين."
+
+msgid "Invalid or expired code."
+msgstr "رمز غير صالح أو منتهي الصلاحية."
+
+msgid "Too many attempts. Please try again later."
+msgstr "محاولات كثيرة. يرجى المحاولة لاحقا."
+
+msgid "SMS sending is disabled globally."
+msgstr "إرسال الرسائل معطل."
+
+msgid "Gateway not configured. Please log in first."
+msgstr "البوابة غير مهيأة. يرجى تسجيل الدخول أولا."
+
+msgid "Session expired. Please start over."
+msgstr "انتهت الجلسة. يرجى البدء من جديد."
+
+msgid "Session expired. Please log in again."
+msgstr "انتهت الجلسة. يرجى تسجيل الدخول مجددا."
+
+msgid "Your account is not active. Please contact the site administrator."
+msgstr "حسابك غير نشط. يرجى التواصل مع مدير الموقع."
+
+msgid "Sync failed. Gateway may not be connected."
+msgstr "فشلت المزامنة. قد تكون البوابة غير متصلة."
+
+msgid "Phone number is required to send a test SMS."
+msgstr "رقم الهاتف مطلوب لإرسال رسالة اختبار."
+
+msgid "Test SMS sent: @msg"
+msgstr "تم إرسال رسالة الاختبار: @msg"
+
+msgid "Test SMS failed: @msg"
+msgstr "فشل إرسال رسالة الاختبار: @msg"
+
+msgid "Connected successfully. Balance: @balance credits."
+msgstr "تم الاتصال بنجاح. الرصيد: @balance ائتمان."
+
+msgid "All SMS logs have been cleared."
+msgstr "تم مسح جميع سجلات الرسائل."
+
+msgid "Template %label has been saved."
+msgstr "تم حفظ القالب %label."
+
+msgid "Template %label has been deleted."
+msgstr "تم حذف القالب %label."
+
+msgid "Template %label has been reset to its default."
+msgstr "تم إعادة القالب %label إلى قيمته الافتراضية."
+
+msgid "Template not found."
+msgstr "القالب غير موجود."
+
+# Settings labels
+msgid "Default country code"
+msgstr "رمز البلد الافتراضي"
+
+msgid "Sender ID"
+msgstr "معرف المرسل"
+
+msgid "OTP mode"
+msgstr "وضع تسجيل دخول OTP"
+
+msgid "Disabled"
+msgstr "معطل"
+
+msgid "Primary login (SMS only)"
+msgstr "أساسي (تسجيل بالهاتف فقط)"
+
+msgid "Two-factor authentication (2FA)"
+msgstr "مصادقة ثنائية (2FA)"
+
+msgid "Password reset mode"
+msgstr "وضع إعادة تعيين كلمة المرور"
+
+msgid "Email only"
+msgstr "البريد فقط"
+
+msgid "SMS only"
+msgstr "الرسائل فقط"
+
+msgid "Email and SMS"
+msgstr "البريد والرسائل"
+
+msgid "Enable debug logging"
+msgstr "تفعيل تسجيل التصحيح"
+
+msgid "SMS language"
+msgstr "لغة الرسائل"
+
+msgid "Auto (user preference)"
+msgstr "تلقائي (حسب المستخدم)"
+
+msgid "Force English"
+msgstr "فرض الإنجليزية"
+
+msgid "Force Arabic"
+msgstr "فرض العربية"
+
+msgid "OTP login mode"
+msgstr "وضع تسجيل دخول OTP"
+
+msgid "Debug logging"
+msgstr "تسجيل التصحيح"
+
+# Settings fieldsets and labels
+msgid "General"
+msgstr "عام"
+
+msgid "Authentication and OTP"
+msgstr "المصادقة وOTP"
+
+msgid "Logging"
+msgstr "السجلات"
+
+msgid "Rate Limits"
+msgstr "حدود المعدل"
+
+msgid "Notifications"
+msgstr "الإشعارات"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "Roles with OTP enabled"
+msgstr "الأدوار التي تستخدم OTP"
+
+msgid "Apply OTP to users with these roles."
+msgstr "تفعيل OTP للمستخدمين بهذه الأدوار."
+
+msgid "Max OTP requests per phone per hour"
+msgstr "الحد الأقصى لطلبات OTP لكل رقم في الساعة"
+
+msgid "Max OTP requests per IP per hour"
+msgstr "الحد الأقصى لطلبات OTP لكل IP في الساعة"
+
+msgid "Failed attempts before lockout"
+msgstr "المحاولات الفاشلة قبل القفل"
+
+msgid "Lockout duration (minutes)"
+msgstr "مدة القفل (بالدقائق)"
+
+msgid "OTP resend cooldown (seconds)"
+msgstr "فترة الانتظار بين إعادة إرسال OTP (بالثواني)"
+
+msgid "Seconds between OTP resends."
+msgstr "عدد الثواني بين كل إعادة إرسال لـ OTP."
+
+msgid "Notify customer on registration"
+msgstr "إشعار العميل عند التسجيل"
+
+msgid "Notify admin on registration"
+msgstr "إشعار المشرف عند التسجيل"
+
+msgid "Admin phone numbers"
+msgstr "أرقام هاتف المشرفين"
+
+msgid "Admin phone numbers (one per line or comma-separated)."
+msgstr "أرقام هاتف المشرفين (رقم في كل سطر أو مفصولة بفاصلة)."
+
+msgid "Connect to the gateway to load country codes from coverage data."
+msgstr "اتصل بالبوابة لتحميل رموز الدول من بيانات التغطية."
+
+msgid "Select sender ID"
+msgstr "اختر معرف المرسل"
+
+msgid "Connect to the gateway to load available sender IDs."
+msgstr "اتصل بالبوابة لتحميل معرفات المرسل المتاحة."
+
+# Dashboard
+msgid "SMS Status"
+msgstr "حالة الرسائل"
+
+msgid "Enabled"
+msgstr "مفعل"
+
+msgid "Connected"
+msgstr "متصل"
+
+msgid "Disconnected"
+msgstr "غير متصل"
+
+msgid "Balance"
+msgstr "الرصيد"
+
+msgid "credits"
+msgstr "ائتمان"
+
+msgid "Test Mode"
+msgstr "وضع الاختبار"
+
+msgid "On"
+msgstr "مفعل"
+
+msgid "Off"
+msgstr "معطل"
+
+msgid "Sent Today"
+msgstr "أرسل اليوم"
+
+msgid "This Week"
+msgstr "هذا الأسبوع"
+
+msgid "This Month"
+msgstr "هذا الشهر"
+
+msgid "30-Day Send Activity"
+msgstr "نشاط الإرسال خلال 30 يوما"
+
+msgid "Quick Actions"
+msgstr "إجراءات سريعة"
+
+msgid "Gateway Settings"
+msgstr "إعدادات البوابة"
+
+msgid "View Logs"
+msgstr "عرض السجلات"
+
+# Gateway form
+msgid "Gateway Credentials"
+msgstr "بيانات اعتماد البوابة"
+
+msgid "Your kwtSMS API username."
+msgstr "اسم المستخدم الخاص بك في API كويت SMS."
+
+msgid "Your kwtSMS API password."
+msgstr "كلمة مرور API كويت SMS."
+
+msgid "Connected as: <strong>@user</strong>"
+msgstr "متصل بحساب: <strong>@user</strong>"
+
+msgid "Gateway Info"
+msgstr "معلومات البوابة"
+
+msgid "Balance: <strong>@balance</strong>"
+msgstr "الرصيد: <strong>@balance</strong>"
+
+msgid "Sender IDs: <strong>@ids</strong>"
+msgstr "معرفات المرسل: <strong>@ids</strong>"
+
+msgid "Coverage: <strong>@coverage</strong>"
+msgstr "التغطية: <strong>@coverage</strong>"
+
+msgid "Last sync: <strong>@time</strong>"
+msgstr "آخر مزامنة: <strong>@time</strong>"
+
+msgid "Never"
+msgstr "لم يتم بعد"
+
+msgid "None cached"
+msgstr "لا يوجد مخزون"
+
+msgid "@count prefixes covered"
+msgstr "@count بادئة مغطاة"
+
+msgid "Not cached"
+msgstr "غير مخزون"
+
+msgid "Unknown"
+msgstr "غير معروف"
+
+msgid "Message"
+msgstr "الرسالة"
+
+msgid "Enter the recipient phone number in international format (e.g. 96598765432)."
+msgstr "أدخل رقم هاتف المستلم بالصيغة الدولية (مثال: 96598765432)."
+
+# Gateway form OTP/login
+msgid "Send Reset Code"
+msgstr "إرسال رمز إعادة التعيين"
+
+msgid "Enter your mobile phone number to receive a verification code."
+msgstr "أدخل رقم هاتفك للحصول على رمز التحقق."
+
+msgid "Enter your registered phone number to receive a password reset code."
+msgstr "أدخل رقم هاتفك المسجل لاستلام رمز إعادة تعيين كلمة المرور."
+
+msgid "Enter the 6-digit code sent to your phone."
+msgstr "أدخل الرمز المكون من 6 أرقام المرسل إلى هاتفك."
+
+msgid "Resend code"
+msgstr "إعادة إرسال الرمز"
+
+msgid "Invalid phone number format."
+msgstr "صيغة رقم الهاتف غير صحيحة."
+
+msgid "SMS password reset is not enabled."
+msgstr "إعادة تعيين كلمة المرور عبر الرسائل غير مفعلة."
+
+msgid "This phone number is temporarily locked. Please try again later."
+msgstr "هذا الرقم مؤقتا مقفل. يرجى المحاولة لاحقا."
+
+msgid "A code was recently sent. Please wait before requesting another."
+msgstr "تم إرسال رمز مؤخرا. يرجى الانتظار قبل طلب رمز آخر."
+
+# Template form
+msgid "Label"
+msgstr "التسمية"
+
+msgid "Category"
+msgstr "الفئة"
+
+msgid "Recipient Type"
+msgstr "نوع المستلم"
+
+msgid "System"
+msgstr "النظام"
+
+msgid "Actions"
+msgstr "الإجراءات"
+
+msgid "Edit"
+msgstr "تعديل"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "Yes"
+msgstr "نعم"
+
+msgid "No"
+msgstr "لا"
+
+msgid "No templates found."
+msgstr "لا توجد قوالب."
+
+msgid "Authentication"
+msgstr "المصادقة"
+
+msgid "Admin Alerts"
+msgstr "تنبيهات المشرف"
+
+msgid "Commerce"
+msgstr "التجارة الإلكترونية"
+
+msgid "Customer"
+msgstr "العميل"
+
+msgid "Admin"
+msgstr "المشرف"
+
+msgid "Both"
+msgstr "كلاهما"
+
+msgid "Machine name"
+msgstr "الاسم الآلي"
+
+msgid "Message body (English)"
+msgstr "نص الرسالة (بالإنجليزية)"
+
+msgid "Standard SMS: up to 160 characters (1 page). Unicode SMS (Arabic/emoji): up to 70 characters (1 page)."
+msgstr "SMS عادي: حتى 160 حرفا (صفحة واحدة). SMS Unicode (عربي/رموز): حتى 70 حرفا (صفحة واحدة)."
+
+msgid "Available tokens: [site:name], [user:display-name], [user:mail], [kwtsms:otp-code], [kwtsms:sender-id], [kwtsms:balance]"
+msgstr "الرموز المتاحة: [site:name]، [user:display-name]، [user:mail]، [kwtsms:otp-code]، [kwtsms:sender-id]، [kwtsms:balance]"
+
+msgid "Message body (Arabic)"
+msgstr "نص الرسالة (بالعربية)"
+
+# Logs form
+msgid "Filter Logs"
+msgstr "تصفية السجلات"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "All statuses"
+msgstr "جميع الحالات"
+
+msgid "Sent"
+msgstr "تم الإرسال"
+
+msgid "Failed"
+msgstr "فشل"
+
+msgid "Skipped"
+msgstr "تخطي"
+
+msgid "Event Type"
+msgstr "نوع الحدث"
+
+msgid "All event types"
+msgstr "جميع أنواع الأحداث"
+
+msgid "Manual"
+msgstr "يدوي"
+
+msgid "OTP"
+msgstr "OTP"
+
+msgid "User Registration"
+msgstr "تسجيل المستخدم"
+
+msgid "Order Placed"
+msgstr "طلب مقدم"
+
+msgid "Date from"
+msgstr "من تاريخ"
+
+msgid "Date to"
+msgstr "إلى تاريخ"
+
+msgid "Filter"
+msgstr "تصفية"
+
+msgid "Date"
+msgstr "التاريخ"
+
+msgid "Recipient"
+msgstr "المستلم"
+
+msgid "Template"
+msgstr "القالب"
+
+msgid "Error Code"
+msgstr "رمز الخطأ"
+
+msgid "Error Description"
+msgstr "وصف الخطأ"
+
+msgid "No log entries found."
+msgstr "لا توجد سجلات."
+
+# Integrations form
+msgid "Commerce Integration"
+msgstr "تكامل التجارة الإلكترونية"
+
+msgid "Enable the kwtSMS Commerce submodule for order notifications."
+msgstr "فعّل الوحدة الفرعية kwtSMS Commerce لإشعارات الطلبات."
+
+msgid "Configure which order status transitions trigger an SMS notification."
+msgstr "اختر حالات الطلبات التي تُرسل عندها رسالة SMS."
+
+msgid "Order placed"
+msgstr "طلب مقدم"
+
+msgid "Send an SMS when a new order is placed."
+msgstr "إرسال رسالة SMS عند تقديم طلب جديد."
+
+msgid "Order completed"
+msgstr "طلب مكتمل"
+
+msgid "Send an SMS when an order is marked as completed."
+msgstr "إرسال رسالة SMS عند اكتمال الطلب."
+
+msgid "Order canceled"
+msgstr "طلب ملغى"
+
+msgid "Send an SMS when an order is canceled."
+msgstr "إرسال رسالة SMS عند إلغاء الطلب."
+
+msgid "Future Integrations"
+msgstr "تكاملات مستقبلية"
+
+msgid "More integrations coming soon (Webform, etc.)"
+msgstr "المزيد من التكاملات قريبا (Webform، وغيرها)."
+
+# Help page
+msgid "Getting Started"
+msgstr "البدء"
+
+msgid "Sign up for an account at"
+msgstr "سجل حسابا في"
+
+msgid "Obtain your API credentials (username and password) from the kwtSMS dashboard."
+msgstr "احصل على بيانات اعتماد API (اسم المستخدم وكلمة المرور) من لوحة تحكم kwtSMS."
+
+msgid "Go to the Gateway tab, enter your credentials, and click Login to connect."
+msgstr "انتقل إلى تبويب البوابة، أدخل بيانات اعتمادك، ثم انقر على تسجيل الدخول للاتصال."
+
+msgid "Configure your Sender ID in the Settings tab."
+msgstr "قم بتهيئة معرف المرسل في تبويب الإعدادات."
+
+msgid "Enable SMS sending in the Settings tab."
+msgstr "فعّل إرسال الرسائل في تبويب الإعدادات."
+
+msgid "Features"
+msgstr "الميزات"
+
+msgid "OTP Login: allow users to log in with a one-time SMS code instead of a password."
+msgstr "تسجيل الدخول بـ OTP: السماح للمستخدمين بالدخول برمز SMS لمرة واحدة بدلا من كلمة المرور."
+
+msgid "Two-Factor Authentication (2FA): add a second verification step after password login."
+msgstr "المصادقة الثنائية (2FA): إضافة خطوة تحقق ثانية بعد تسجيل الدخول بكلمة المرور."
+
+msgid "Password Reset: let users reset their password via an SMS code."
+msgstr "إعادة تعيين كلمة المرور: السماح للمستخدمين بإعادة تعيين كلمة المرور عبر رمز SMS."
+
+msgid "User Registration Alerts: notify customers and admins when a new account is created."
+msgstr "تنبيهات تسجيل المستخدم: إشعار العملاء والمشرفين عند إنشاء حساب جديد."
+
+msgid "Commerce Order Alerts: send SMS notifications on order placement, completion, or cancellation (requires kwtSMS Commerce submodule)."
+msgstr "تنبيهات طلبات التجارة: إرسال إشعارات SMS عند تقديم الطلب أو اكتماله أو إلغائه (يتطلب الوحدة الفرعية kwtSMS Commerce)."
+
+msgid "The Sender ID is the name or number that appears as the sender on the recipient's phone."
+msgstr "معرف المرسل هو الاسم أو الرقم الذي يظهر كمرسل على هاتف المستلم."
+
+msgid "The default KWT-SMS sender ID is for testing purposes only and may not be available in production."
+msgstr "معرف المرسل الافتراضي KWT-SMS لأغراض الاختبار فقط وقد لا يكون متاحا في بيئة الإنتاج."
+
+msgid "To register a custom Sender ID for your business, visit"
+msgstr "لتسجيل معرف مرسل مخصص لنشاطك التجاري، تفضل بزيارة"
+
+msgid "Support"
+msgstr "الدعم"
+
+msgid "Contact Support"
+msgstr "تواصل مع الدعم"
+
+msgid "Frequently Asked Questions"
+msgstr "الأسئلة الشائعة"
+
+# Country codes
+msgid "965 - Kuwait"
+msgstr "965 - الكويت"
+
+msgid "966 - KSA"
+msgstr "966 - المملكة العربية السعودية"
+
+msgid "971 - UAE"
+msgstr "971 - الإمارات العربية المتحدة"
+
+msgid "973 - Bahrain"
+msgstr "973 - البحرين"
+
+msgid "974 - Qatar"
+msgstr "974 - قطر"
+
+# Token info
+msgid "kwtSMS"
+msgstr "kwtSMS"
+
+msgid "Tokens related to kwtSMS."
+msgstr "رموز متعلقة بـ kwtSMS."
+
+msgid "OTP Code"
+msgstr "رمز OTP"
+
+msgid "The one-time password code."
+msgstr "رمز كلمة المرور لمرة واحدة."
+
+msgid "The active kwtSMS sender ID."
+msgstr "معرف المرسل النشط في kwtSMS."
+
+msgid "Current kwtSMS account balance."
+msgstr "الرصيد الحالي لحساب kwtSMS."
+
+# Module help hook
+msgid "kwtSMS provides SMS gateway integration with kwtsms.com. Configure the gateway at <a href=\":url\">kwtSMS settings</a>."
+msgstr "يوفر kwtSMS تكاملا مع بوابة SMS عبر kwtsms.com. قم بتهيئة البوابة من <a href=\":url\">إعدادات kwtSMS</a>."
+
+# SMS Template entity
+msgid "SMS Template"
+msgstr "قالب الرسائل"
