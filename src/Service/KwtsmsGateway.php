@@ -684,9 +684,9 @@ class KwtsmsGateway {
         $this->setCachedValue('balance', (int) $apiResult['balance-after']);
       }
 
-      $msgId          = $apiResult['msg-id'] ?? NULL;
-      $pointsCharged  = isset($apiResult['points-charged']) ? (int) $apiResult['points-charged'] : 0;
-      $balanceAfter   = isset($apiResult['balance-after']) ? (int) $apiResult['balance-after'] : 0;
+      $msgId           = $apiResult['msg-id'] ?? NULL;
+      $pointsCharged   = isset($apiResult['points-charged']) ? (int) $apiResult['points-charged'] : 0;
+      $balanceAfter    = isset($apiResult['balance-after']) ? (int) $apiResult['balance-after'] : 0;
       $apiResponseJson = json_encode($apiResult);
 
       foreach ($numbers as $number) {
@@ -719,8 +719,8 @@ class KwtsmsGateway {
     }
 
     // API returned ERROR.
-    $errorCode    = $apiResult['code'] ?? 'UNKNOWN';
-    $errorDesc    = $apiResult['description'] ?? 'Unknown API error.';
+    $errorCode       = $apiResult['code'] ?? 'UNKNOWN';
+    $errorDesc       = $apiResult['description'] ?? 'Unknown API error.';
     $apiResponseJson = json_encode($apiResult);
 
     foreach ($numbers as $number) {

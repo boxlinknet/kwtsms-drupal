@@ -112,7 +112,7 @@ class GatewayForm extends FormBase {
 
       // Format coverage: count entries or show a summary.
       if (is_array($coverage)) {
-        $prefixes  = $coverage['prefixes'] ?? $coverage['prefix'] ?? [];
+        $prefixes = $coverage['prefixes'] ?? $coverage['prefix'] ?? [];
         $coverageText = is_array($prefixes)
           ? $this->t('@count prefixes covered', ['@count' => count($prefixes)])
           : $this->t('Cached (format unknown)');

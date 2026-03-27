@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\user\Entity\User;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -118,7 +119,7 @@ class OtpVerifyForm extends FormBase {
       $store->delete('reset_uid');
       $store->delete('otp_phone');
       if ($resetUid) {
-        $user = \Drupal\user\Entity\User::load($resetUid);
+        $user = User::load($resetUid);
         if ($user) {
           // Generate one-time login link and redirect.
           $url = user_pass_reset_url($user);

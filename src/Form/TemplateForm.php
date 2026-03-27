@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
-use Drupal\kwtsms\Entity\SmsTemplate;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
