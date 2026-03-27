@@ -19,7 +19,6 @@ docs/
 .env.*
 
 # Testing
-tests/
 test/
 .playwright*
 
