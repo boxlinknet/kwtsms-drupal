@@ -1,0 +1,281 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for kwtSMS.
+ *
+ * Defines database tables: kwtsms_sms_log, kwtsms_otp, kwtsms_cache.
+ *
+ * Related files:
+ *   - src/Service/SmsLogger.php (writes to kwtsms_sms_log)
+ *   - src/Authentication/OtpAuthProvider.php (writes to kwtsms_otp)
+ *   - src/Service/KwtsmsGateway.php (writes to kwtsms_cache)
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_schema().
+ */
+function kwtsms_schema(): array {
+  $schema['kwtsms_sms_log'] = [
+    'description' => 'Log of all SMS messages sent through kwtSMS.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'recipient' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Single phone number in international format.',
+      ],
+      'message' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'Full SMS text sent.',
+      ],
+      'template_id' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+        'default' => NULL,
+        'description' => 'Template machine name, NULL for manual sends.',
+      ],
+      'sender_id' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Sender ID used for this message.',
+      ],
+      'direction' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => TRUE,
+        'default' => 'outgoing',
+        'description' => 'Always outgoing (A2P only).',
+      ],
+      'status' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'sent, failed, or skipped.',
+      ],
+      'msg_id' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => FALSE,
+        'default' => NULL,
+        'description' => 'kwtSMS message ID from API response.',
+      ],
+      'api_response' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => FALSE,
+        'description' => 'Full JSON API response with credentials stripped.',
+      ],
+      'error_code' => [
+        'type' => 'varchar',
+        'length' => 10,
+        'not null' => FALSE,
+        'default' => NULL,
+        'description' => 'kwtSMS error code if failed.',
+      ],
+      'error_description' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => NULL,
+        'description' => 'Human-readable error description from API.',
+      ],
+      'points_charged' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'SMS credits consumed.',
+      ],
+      'balance_after' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Account balance after send.',
+      ],
+      'test_mode' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => '1 if sent with test=1.',
+      ],
+      'event_type' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => 'manual',
+        'description' => 'Event trigger: user_register, order_placed, otp, manual, etc.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Drupal user ID of recipient, 0 for guests.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Unix timestamp of send.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'status' => ['status'],
+      'created' => ['created'],
+      'recipient' => ['recipient'],
+      'event_type' => ['event_type'],
+      'msg_id' => ['msg_id'],
+    ],
+  ];
+
+  $schema['kwtsms_otp'] = [
+    'description' => 'OTP codes for SMS-based login and password reset.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'phone' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Normalized phone number.',
+      ],
+      'code_hash' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+        'description' => 'Hashed OTP code.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Drupal user ID, 0 if unknown at request time.',
+      ],
+      'purpose' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'login, password_reset, or two_factor.',
+      ],
+      'attempts' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Failed verification attempt count.',
+      ],
+      'ip_address' => [
+        'type' => 'varchar',
+        'length' => 45,
+        'not null' => TRUE,
+        'description' => 'IP address of the requester.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Unix timestamp of creation.',
+      ],
+      'expires' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Unix timestamp of expiry.',
+      ],
+      'used' => [
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => '1 if successfully verified.',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'phone_purpose' => ['phone', 'purpose'],
+      'expires' => ['expires'],
+      'ip_address' => ['ip_address'],
+    ],
+  ];
+
+  $schema['kwtsms_cache'] = [
+    'description' => 'Cached API data: balance, sender IDs, coverage.',
+    'fields' => [
+      'cache_key' => [
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Cache key: balance, senderids, coverage.',
+      ],
+      'cache_value' => [
+        'type' => 'text',
+        'size' => 'medium',
+        'not null' => TRUE,
+        'description' => 'JSON-encoded cached data.',
+      ],
+      'updated' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Unix timestamp of last update.',
+      ],
+    ],
+    'primary key' => ['cache_key'],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function kwtsms_install(): void {
+  \Drupal::configFactory()->getEditable('kwtsms.settings')
+    ->set('enabled', FALSE)
+    ->set('test_mode', TRUE)
+    ->set('debug_logging', TRUE)
+    ->set('default_country_code', '965')
+    ->set('sms_language', 'auto')
+    ->set('otp_mode', 'disabled')
+    ->set('password_reset_mode', 'email_only')
+    ->set('otp_per_phone_hour', 5)
+    ->set('otp_per_ip_hour', 10)
+    ->set('otp_lockout_attempts', 5)
+    ->set('otp_lockout_minutes', 15)
+    ->set('otp_resend_cooldown', 60)
+    ->set('notify_user_registered_customer', FALSE)
+    ->set('notify_user_registered_admin', FALSE)
+    ->set('admin_phones', '')
+    ->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function kwtsms_uninstall(): void {
+  \Drupal::state()->deleteMultiple([
+    'kwtsms.api_password',
+    'kwtsms.gateway_connected',
+  ]);
+}
