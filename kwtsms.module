@@ -76,3 +76,26 @@ function kwtsms_tokens(string $type, array $tokens, array $data, array $options)
   }
   return $replacements;
 }
+
+/**
+ * Implements hook_theme().
+ */
+function kwtsms_theme(): array {
+  return [
+    'kwtsms_dashboard' => [
+      'variables' => [
+        'enabled'   => FALSE,
+        'connected' => FALSE,
+        'username'  => '',
+        'balance'   => 0,
+        'sender_id' => '',
+        'test_mode' => FALSE,
+        'stats'     => [],
+        'sync_url'  => NULL,
+      ],
+    ],
+    'kwtsms_help' => [
+      'variables' => [],
+    ],
+  ];
+}

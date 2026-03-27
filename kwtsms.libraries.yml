@@ -1,0 +1,9 @@
+dashboard:
+  version: 1.x
+  css:
+    theme:
+      css/kwtsms-admin.css: {}
+  js:
+    js/kwtsms-dashboard.js: {}
+  dependencies:
+    - core/drupalSettings

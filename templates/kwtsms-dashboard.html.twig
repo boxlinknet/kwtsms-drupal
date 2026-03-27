@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * kwtSMS admin dashboard template.
+ *
+ * Available variables:
+ *   - enabled:   Boolean. Whether the module is enabled.
+ *   - connected: Boolean. Whether the gateway is connected.
+ *   - username:  String. The kwtSMS API username.
+ *   - balance:   Integer. Cached SMS credit balance.
+ *   - sender_id: String. The configured sender ID.
+ *   - test_mode: Boolean. Whether test mode is active.
+ *   - stats:     Array with keys today, week, month.
+ *   - sync_url:  Url object for the gateway sync endpoint.
+ */
+#}
+<div class="kwtsms-dashboard">
+
+  {# Status cards row #}
+  <div class="kwtsms-dashboard-cards">
+
+    <div class="kwtsms-card">
+      <div class="kwtsms-card-label">{{ 'SMS Status'|t }}</div>
+      {% if enabled %}
+        <div class="kwtsms-card-value kwtsms-status-on">{{ 'Enabled'|t }}</div>
+      {% else %}
+        <div class="kwtsms-card-value kwtsms-status-off">{{ 'Disabled'|t }}</div>
+      {% endif %}
+    </div>
+
+    <div class="kwtsms-card">
+      <div class="kwtsms-card-label">{{ 'Gateway'|t }}</div>
+      {% if connected %}
+        <div class="kwtsms-card-value kwtsms-status-on">{{ 'Connected'|t }}</div>
+        {% if username %}
+          <div class="kwtsms-card-sub">{{ username }}</div>
+        {% endif %}
+      {% else %}
+        <div class="kwtsms-card-value kwtsms-status-off">{{ 'Disconnected'|t }}</div>
+      {% endif %}
+    </div>
+
+    <div class="kwtsms-card">
+      <div class="kwtsms-card-label">{{ 'Balance'|t }}</div>
+      <div class="kwtsms-card-value">{{ balance }} {{ 'credits'|t }}</div>
+    </div>
+
+    <div class="kwtsms-card">
+      <div class="kwtsms-card-label">{{ 'Sender ID'|t }}</div>
+      <div class="kwtsms-card-value">{{ sender_id ?: ('Not set'|t) }}</div>
+    </div>
+
+    <div class="kwtsms-card">
+      <div class="kwtsms-card-label">{{ 'Test Mode'|t }}</div>
+      {% if test_mode %}
+        <div class="kwtsms-card-value kwtsms-status-off">{{ 'On'|t }}</div>
+      {% else %}
+        <div class="kwtsms-card-value kwtsms-status-on">{{ 'Off'|t }}</div>
+      {% endif %}
+    </div>
+
+  </div>{# /.kwtsms-dashboard-cards #}
+
+  {# Stats row #}
+  <div class="kwtsms-stats-row">
+
+    <div class="kwtsms-stat-item">
+      <div class="kwtsms-stat-count">{{ stats.today|default(0) }}</div>
+      <div class="kwtsms-stat-label">{{ 'Sent Today'|t }}</div>
+    </div>
+
+    <div class="kwtsms-stat-item">
+      <div class="kwtsms-stat-count">{{ stats.week|default(0) }}</div>
+      <div class="kwtsms-stat-label">{{ 'This Week'|t }}</div>
+    </div>
+
+    <div class="kwtsms-stat-item">
+      <div class="kwtsms-stat-count">{{ stats.month|default(0) }}</div>
+      <div class="kwtsms-stat-label">{{ 'This Month'|t }}</div>
+    </div>
+
+  </div>{# /.kwtsms-stats-row #}
+
+  {# 30-day bar chart #}
+  <div class="kwtsms-chart-container">
+    <h3>{{ '30-Day Send Activity'|t }}</h3>
+    <canvas id="kwtsms-chart" width="800" height="300"></canvas>
+  </div>
+
+  {# Quick actions #}
+  <div class="kwtsms-quick-actions">
+    <h3>{{ 'Quick Actions'|t }}</h3>
+    <ul class="kwtsms-action-list">
+      <li>
+        <a href="{{ url('kwtsms.gateway') }}" class="button">{{ 'Gateway Settings'|t }}</a>
+      </li>
+      {% if connected %}
+        <li>
+          <a href="{{ sync_url }}" class="button">{{ 'Sync Now'|t }}</a>
+        </li>
+      {% endif %}
+      <li>
+        <a href="{{ url('kwtsms.settings') }}" class="button">{{ 'Settings'|t }}</a>
+      </li>
+      <li>
+        <a href="{{ url('kwtsms.logs') }}" class="button">{{ 'View Logs'|t }}</a>
+      </li>
+    </ul>
+  </div>
+
+</div>{# /.kwtsms-dashboard #}
