@@ -99,3 +99,76 @@ function kwtsms_theme(): array {
     ],
   ];
 }
+
+/**
+ * Implements hook_user_login().
+ */
+function kwtsms_user_login(\Drupal\Core\Session\AccountInterface $account): void {
+  $config = \Drupal::config('kwtsms.settings');
+  if ($config->get('otp_mode') !== '2fa') {
+    return;
+  }
+  $twoFactorManager = \Drupal::service('kwtsms.two_factor_manager');
+  if (!$twoFactorManager->shouldRequire2fa($account)) {
+    return;
+  }
+  // Store UID for 2FA verification.
+  \Drupal::service('tempstore.private')->get('kwtsms')->set('2fa_uid', $account->id());
+
+  // Get user's phone and send OTP.
+  $user = \Drupal\user\Entity\User::load($account->id());
+  if ($user && $user->hasField('field_phone')) {
+    $phone = $user->get('field_phone')->value ?? '';
+    if (!empty($phone)) {
+      $normalizer = \Drupal::service('kwtsms.phone_normalizer');
+      $phone      = $normalizer->normalize($phone);
+      $otpProvider = \Drupal::service('kwtsms.otp_provider');
+      $code        = $otpProvider->generateOtp($phone, 'two_factor', (int) $account->id());
+      $renderer    = \Drupal::service('kwtsms.template_renderer');
+      $message     = $renderer->render('otp_login', ['user' => $user], ['[kwtsms:otp-code]' => $code]);
+      if ($message) {
+        $gateway = \Drupal::service('kwtsms.gateway');
+        $gateway->send($phone, $message, '2fa', ['template_id' => 'otp_login', 'uid' => (int) $account->id()]);
+      }
+    }
+  }
+
+  // Log out and redirect to 2FA form.
+  user_logout();
+  $response = new \Symfony\Component\HttpFoundation\RedirectResponse(
+    \Drupal\Core\Url::fromRoute('kwtsms.two_factor_verify')->toString()
+  );
+  $response->send();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for user_login_form.
+ */
+function kwtsms_form_user_login_form_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+  $config  = \Drupal::config('kwtsms.settings');
+  $otpMode = $config->get('otp_mode');
+  if ($otpMode === 'primary' || $otpMode === '2fa') {
+    $form['kwtsms_otp_link'] = [
+      '#markup' => '<div class="kwtsms-otp-link"><a href="' .
+        \Drupal\Core\Url::fromRoute('kwtsms.otp_login')->toString() .
+        '">' . t('Login with SMS') . '</a></div>',
+      '#weight' => 100,
+    ];
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for user_pass.
+ */
+function kwtsms_form_user_pass_alter(array &$form, \Drupal\Core\Form\FormStateInterface $form_state): void {
+  $config = \Drupal::config('kwtsms.settings');
+  $mode   = $config->get('password_reset_mode');
+  if ($mode === 'sms_only' || $mode === 'email_sms') {
+    $form['kwtsms_sms_link'] = [
+      '#markup' => '<div class="kwtsms-sms-reset"><a href="' .
+        \Drupal\Core\Url::fromRoute('kwtsms.password_reset_sms')->toString() .
+        '">' . t('Reset via SMS') . '</a></div>',
+      '#weight' => 100,
+    ];
+  }
+}
