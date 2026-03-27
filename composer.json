@@ -1,0 +1,24 @@
+{
+  "name": "drupal/kwtsms",
+  "description": "kwtSMS gateway integration for Drupal. OTP login, SMS notifications, and Commerce order alerts via kwtsms.com.",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/kwtsms",
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/kwtsms",
+    "source": "https://git.drupalcode.org/project/kwtsms"
+  },
+  "require": {
+    "drupal/core": "^10.3 || ^11"
+  },
+  "suggest": {
+    "drupal/commerce": "Enable kwtsms_commerce submodule for order SMS notifications",
+    "drupal/token": "Provides a token browser UI for SMS template editing"
+  },
+  "extra": {
+    "drupal": {
+      "version": "1.0.0",
+      "datestamp": ""
+    }
+  }
+}

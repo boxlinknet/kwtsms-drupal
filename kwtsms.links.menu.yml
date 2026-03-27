@@ -1,0 +1,6 @@
+kwtsms.admin:
+  title: 'kwtSMS'
+  description: 'Configure kwtSMS gateway, templates, and notifications.'
+  route_name: kwtsms.dashboard
+  parent: system.admin_config
+  weight: 50

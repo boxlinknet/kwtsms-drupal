@@ -1,0 +1,41 @@
+kwtsms.dashboard:
+  title: 'Dashboard'
+  route_name: kwtsms.dashboard
+  base_route: kwtsms.dashboard
+  weight: 0
+
+kwtsms.settings:
+  title: 'Settings'
+  route_name: kwtsms.settings
+  base_route: kwtsms.dashboard
+  weight: 10
+
+kwtsms.gateway:
+  title: 'Gateway'
+  route_name: kwtsms.gateway
+  base_route: kwtsms.dashboard
+  weight: 20
+
+kwtsms.templates:
+  title: 'Templates'
+  route_name: kwtsms.templates
+  base_route: kwtsms.dashboard
+  weight: 30
+
+kwtsms.integrations:
+  title: 'Integrations'
+  route_name: kwtsms.integrations
+  base_route: kwtsms.dashboard
+  weight: 40
+
+kwtsms.logs:
+  title: 'Logs'
+  route_name: kwtsms.logs
+  base_route: kwtsms.dashboard
+  weight: 50
+
+kwtsms.help_page:
+  title: 'Help'
+  route_name: kwtsms.help_page
+  base_route: kwtsms.dashboard
+  weight: 60

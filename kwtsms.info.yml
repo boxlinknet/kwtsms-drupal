@@ -1,0 +1,10 @@
+name: 'kwtSMS'
+type: module
+description: 'SMS gateway integration with kwtsms.com for OTP login, notifications, and Commerce order alerts.'
+package: kwtSMS
+core_version_requirement: ^10.3 || ^11
+php: 8.2
+configure: kwtsms.dashboard
+
+dependencies:
+  - drupal:system (>=10.3)

@@ -1,0 +1,75 @@
+services:
+  kwtsms.gateway:
+    class: Drupal\kwtsms\Service\KwtsmsGateway
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+      - '@state'
+      - '@database'
+      - '@logger.channel.kwtsms'
+      - '@kwtsms.phone_normalizer'
+      - '@kwtsms.message_cleaner'
+
+  kwtsms.phone_normalizer:
+    class: Drupal\kwtsms\Service\PhoneNormalizer
+    arguments:
+      - '@config.factory'
+
+  kwtsms.message_cleaner:
+    class: Drupal\kwtsms\Service\MessageCleaner
+
+  kwtsms.template_renderer:
+    class: Drupal\kwtsms\Service\TemplateRenderer
+    arguments:
+      - '@entity_type.manager'
+      - '@token'
+      - '@config.factory'
+      - '@language_manager'
+
+  kwtsms.logger:
+    class: Drupal\kwtsms\Service\SmsLogger
+    arguments:
+      - '@database'
+      - '@config.factory'
+      - '@logger.channel.kwtsms'
+
+  kwtsms.otp_provider:
+    class: Drupal\kwtsms\Authentication\OtpAuthProvider
+    arguments:
+      - '@database'
+      - '@kwtsms.gateway'
+      - '@kwtsms.phone_normalizer'
+      - '@kwtsms.logger'
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@request_stack'
+
+  kwtsms.two_factor_manager:
+    class: Drupal\kwtsms\Authentication\TwoFactorManager
+    arguments:
+      - '@kwtsms.otp_provider'
+      - '@config.factory'
+      - '@current_user'
+
+  kwtsms.user_event_subscriber:
+    class: Drupal\kwtsms\EventSubscriber\UserEventSubscriber
+    arguments:
+      - '@kwtsms.gateway'
+      - '@kwtsms.template_renderer'
+      - '@kwtsms.logger'
+      - '@config.factory'
+    tags:
+      - { name: event_subscriber }
+
+  kwtsms.cron_subscriber:
+    class: Drupal\kwtsms\EventSubscriber\CronSubscriber
+    arguments:
+      - '@kwtsms.gateway'
+      - '@kwtsms.logger'
+      - '@database'
+    tags:
+      - { name: event_subscriber }
+
+  logger.channel.kwtsms:
+    parent: logger.channel_base
+    arguments: ['kwtsms']

@@ -1,0 +1,120 @@
+kwtsms.dashboard:
+  path: '/admin/config/kwtsms'
+  defaults:
+    _controller: '\Drupal\kwtsms\Controller\DashboardController::page'
+    _title: 'kwtSMS Dashboard'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.settings:
+  path: '/admin/config/kwtsms/settings'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\SettingsForm'
+    _title: 'Settings'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.gateway:
+  path: '/admin/config/kwtsms/gateway'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\GatewayForm'
+    _title: 'Gateway'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.templates:
+  path: '/admin/config/kwtsms/templates'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\TemplateListForm'
+    _title: 'Templates'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.template_edit:
+  path: '/admin/config/kwtsms/templates/{kwtsms_template}'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\TemplateForm'
+    _title: 'Edit Template'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.template_add:
+  path: '/admin/config/kwtsms/templates/add'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\TemplateForm'
+    _title: 'Add Template'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.integrations:
+  path: '/admin/config/kwtsms/integrations'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\IntegrationsForm'
+    _title: 'Integrations'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.logs:
+  path: '/admin/config/kwtsms/logs'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\LogsForm'
+    _title: 'Logs'
+  requirements:
+    _permission: 'view kwtsms logs'
+
+kwtsms.logs_export:
+  path: '/admin/config/kwtsms/logs/export'
+  defaults:
+    _controller: '\Drupal\kwtsms\Controller\LogsExportController::export'
+    _title: 'Export Logs'
+  requirements:
+    _permission: 'view kwtsms logs'
+
+kwtsms.help_page:
+  path: '/admin/config/kwtsms/help'
+  defaults:
+    _controller: '\Drupal\kwtsms\Controller\HelpController::page'
+    _title: 'Help'
+  requirements:
+    _permission: 'administer kwtsms'
+
+kwtsms.otp_login:
+  path: '/user/login/otp'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\OtpLoginForm'
+    _title: 'Login with SMS'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+    _permission: 'use kwtsms otp'
+
+kwtsms.otp_verify:
+  path: '/user/login/otp/verify'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\OtpVerifyForm'
+    _title: 'Enter Verification Code'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+
+kwtsms.password_reset_sms:
+  path: '/user/password/sms'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\PasswordResetSmsForm'
+    _title: 'Reset Password via SMS'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+
+kwtsms.two_factor_verify:
+  path: '/user/login/2fa'
+  defaults:
+    _form: '\Drupal\kwtsms\Form\TwoFactorVerifyForm'
+    _title: 'Two-Factor Verification'
+  requirements:
+    _user_is_logged_in: 'FALSE'
+
+kwtsms.gateway_sync:
+  path: '/admin/config/kwtsms/gateway/sync'
+  defaults:
+    _controller: '\Drupal\kwtsms\Controller\GatewaySyncController::sync'
+  requirements:
+    _permission: 'administer kwtsms'
+    _csrf_token: 'TRUE'

@@ -1,0 +1,45 @@
+# IDE and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Claude Code
+.claude/
+CLAUDE.md
+napkin.md
+.superpowers/
+.worktrees/
+
+# Documentation (local only)
+docs/
+
+# Environment
+.env
+.env.*
+
+# Testing
+tests/
+test/
+.playwright*
+
+# Docker
+docker/
+
+# Dependencies
+vendor/
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Archives
+*.zip
+*.tar.gz
+
+# Remember
+.remember/

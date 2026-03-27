@@ -1,0 +1,16 @@
+administer kwtsms:
+  title: 'Administer kwtSMS'
+  description: 'Full access to all kwtSMS configuration tabs.'
+  restrict access: true
+
+send kwtsms sms:
+  title: 'Send SMS via kwtSMS'
+  description: 'Can trigger manual SMS sends.'
+
+view kwtsms logs:
+  title: 'View kwtSMS logs'
+  description: 'Can view the SMS logs tab.'
+
+use kwtsms otp:
+  title: 'Use kwtSMS OTP login'
+  description: 'Can use OTP or 2FA login via SMS.'

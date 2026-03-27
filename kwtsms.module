@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Primary module file for kwtSMS.
+ *
+ * Provides SMS gateway integration with kwtsms.com for Drupal.
+ * Hooks are kept minimal; business logic lives in services.
+ *
+ * Related files:
+ *   - src/Service/KwtsmsGateway.php (API client)
+ *   - kwtsms.routing.yml (admin routes)
+ *   - kwtsms.services.yml (service definitions)
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function kwtsms_help(string $route_name, RouteMatchInterface $route_match): string {
+  if ($route_name === 'help.page.kwtsms') {
+    return '<p>' . t('kwtSMS provides SMS gateway integration with kwtsms.com. Configure the gateway at <a href=":url">kwtSMS settings</a>.', [
+      ':url' => \Drupal\Core\Url::fromRoute('kwtsms.dashboard')->toString(),
+    ]) . '</p>';
+  }
+  return '';
+}
