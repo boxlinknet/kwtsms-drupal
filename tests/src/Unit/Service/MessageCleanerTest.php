@@ -120,6 +120,7 @@ class MessageCleanerTest extends UnitTestCase {
    * Data provider for testPageCount.
    *
    * @return array<string, array{string, int}>
+   *   Test cases keyed by label, each with text and expected page count.
    */
   public static function providerPageCount(): array {
     // U+0627 is Arabic letter alef, which forces Unicode encoding.

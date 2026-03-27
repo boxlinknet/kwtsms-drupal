@@ -9,21 +9,31 @@ use Drupal\kwtsms\Service\KwtsmsGateway;
 use Drupal\kwtsms\Service\SmsLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Subscribes to cron events for daily sync and OTP cleanup.
+ */
 class CronSubscriber implements EventSubscriberInterface {
 
+  /**
+   * Constructs a CronSubscriber instance.
+   */
   public function __construct(
     private readonly KwtsmsGateway $gateway,
     private readonly SmsLogger $smsLogger,
     private readonly Connection $database,
   ) {}
 
+  /**
+   * Returns subscribed events.
+   */
   public static function getSubscribedEvents(): array {
     // Cron is handled via hook_cron in kwtsms.module.
     return [];
   }
 
   /**
-   * Run daily sync and OTP cleanup.
+   * Runs daily sync and OTP cleanup.
+   *
    * Called from kwtsms_cron() in kwtsms.module.
    */
   public function onCron(): void {

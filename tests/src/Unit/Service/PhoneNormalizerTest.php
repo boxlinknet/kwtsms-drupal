@@ -45,6 +45,7 @@ class PhoneNormalizerTest extends UnitTestCase {
    * Data provider for normalize() tests.
    *
    * @return array<string, array{string, string}>
+   *   Test cases keyed by label, each with input and expected normalized phone.
    */
   public static function normalizeProvider(): array {
     return [
@@ -74,6 +75,7 @@ class PhoneNormalizerTest extends UnitTestCase {
    * Data provider for verify() tests.
    *
    * @return array<string, array{string, bool}>
+   *   Test cases keyed by label, each with phone and expected validity.
    */
   public static function verifyProvider(): array {
     return [
@@ -125,6 +127,7 @@ class PhoneNormalizerTest extends UnitTestCase {
    * Data provider for detectCountryCode() tests.
    *
    * @return array<string, array{string, string|null}>
+   *   Test cases keyed by label, each with phone and expected country code.
    */
   public static function detectCountryCodeProvider(): array {
     return [

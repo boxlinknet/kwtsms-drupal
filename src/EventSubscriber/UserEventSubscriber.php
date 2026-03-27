@@ -11,8 +11,14 @@ use Drupal\kwtsms\Service\SmsLogger;
 use Drupal\kwtsms\Service\TemplateRenderer;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * Subscribes to user entity events for SMS notifications.
+ */
 class UserEventSubscriber implements EventSubscriberInterface {
 
+  /**
+   * Constructs a UserEventSubscriber instance.
+   */
   public function __construct(
     private readonly KwtsmsGateway $gateway,
     private readonly TemplateRenderer $renderer,
@@ -20,6 +26,9 @@ class UserEventSubscriber implements EventSubscriberInterface {
     private readonly ConfigFactoryInterface $configFactory,
   ) {}
 
+  /**
+   * Returns subscribed events.
+   */
   public static function getSubscribedEvents(): array {
     // Entity events are handled via hook_user_insert in kwtsms.module.
     // This class provides the business logic called from that hook.
@@ -27,7 +36,8 @@ class UserEventSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Handle new user registration.
+   * Handles new user registration.
+   *
    * Called from kwtsms_user_insert() in kwtsms.module.
    */
   public function onUserInsert(EntityInterface $entity): void {

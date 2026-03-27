@@ -35,8 +35,7 @@ class MessageCleaner {
   private const UNICODE_MULTI = 67;
 
   /**
-   * Cleans SMS text by stripping HTML, non-Latin digits, emoji, and control
-   * characters, then collapsing whitespace.
+   * Cleans SMS text by stripping HTML, non-Latin digits, emoji, and controls.
    *
    * Steps applied in order:
    *  1. Strip HTML tags (including script/style content via strip_tags).
@@ -66,7 +65,7 @@ class MessageCleaner {
 
     // Step 3: strip emoji and variation selectors.
     // Ranges: U+1F000-U+1FFFF, U+2600-U+27BF, U+FE00-U+FE0F,
-    //         U+1F900-U+1F9FF, U+200D (ZWJ), U+E0020-U+E007F.
+    // U+1F900-U+1F9FF, U+200D (ZWJ), U+E0020-U+E007F.
     $text = preg_replace(
       '/[\x{1F000}-\x{1FFFF}\x{2600}-\x{27BF}\x{FE00}-\x{FE0F}'
       . '\x{1F900}-\x{1F9FF}\x{200D}\x{E0020}-\x{E007F}]/u',
