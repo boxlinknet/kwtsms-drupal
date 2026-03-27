@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -37,8 +36,6 @@ class PasswordResetSmsForm extends FormBase {
    *   The phone normalizer service.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
    *   The private tempstore factory.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   *   The config factory service.
    */
   public function __construct(
     private readonly OtpAuthProvider $otpProvider,
@@ -46,7 +43,6 @@ class PasswordResetSmsForm extends FormBase {
     private readonly TemplateRenderer $templateRenderer,
     private readonly PhoneNormalizer $phoneNormalizer,
     private readonly PrivateTempStoreFactory $tempStoreFactory,
-    private readonly ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -59,7 +55,6 @@ class PasswordResetSmsForm extends FormBase {
       $container->get('kwtsms.template_renderer'),
       $container->get('kwtsms.phone_normalizer'),
       $container->get('tempstore.private'),
-      $container->get('config.factory'),
     );
   }
 
@@ -98,7 +93,7 @@ class PasswordResetSmsForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state): void {
-    $mode = $this->configFactory->get('kwtsms.settings')->get('password_reset_mode');
+    $mode = $this->configFactory()->get('kwtsms.settings')->get('password_reset_mode');
     if ($mode === 'email_only') {
       $form_state->setErrorByName('phone', $this->t('SMS password reset is not enabled.'));
       return;

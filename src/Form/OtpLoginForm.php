@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -35,8 +34,6 @@ class OtpLoginForm extends FormBase {
    *   The phone normalizer service.
    * @param \Drupal\kwtsms\Service\TemplateRenderer $templateRenderer
    *   The template renderer service.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   *   The config factory service.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
    *   The private tempstore factory.
    */
@@ -45,7 +42,6 @@ class OtpLoginForm extends FormBase {
     private readonly KwtsmsGateway $gateway,
     private readonly PhoneNormalizer $phoneNormalizer,
     private readonly TemplateRenderer $templateRenderer,
-    private readonly ConfigFactoryInterface $configFactory,
     private readonly PrivateTempStoreFactory $tempStoreFactory,
   ) {}
 
@@ -58,7 +54,6 @@ class OtpLoginForm extends FormBase {
       $container->get('kwtsms.gateway'),
       $container->get('kwtsms.phone_normalizer'),
       $container->get('kwtsms.template_renderer'),
-      $container->get('config.factory'),
       $container->get('tempstore.private'),
     );
   }
