@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: PHP Lint & Coding Standards
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          tools: composer, phpcs
+
+      - name: Install dependencies
+        run: composer global require drupal/coder
+
+      - name: PHP Lint
+        run: find . -name '*.php' -o -name '*.module' -o -name '*.install' | grep -v vendor | xargs -L1 php -l
+
+      - name: PHPCS (Drupal standard)
+        run: |
+          export PATH="$PATH:$HOME/.composer/vendor/bin"
+          phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install --ignore=vendor,node_modules .
+
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php-version: ['8.2', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: json, curl, mbstring
+
+      - name: Install Drupal test dependencies
+        run: |
+          composer create-project drupal/recommended-project:^11 /tmp/drupal --no-interaction --no-install
+          cd /tmp/drupal
+          composer install --no-interaction
+          mkdir -p web/modules/custom
+          ln -s $GITHUB_WORKSPACE web/modules/custom/kwtsms
+
+      - name: Run unit tests
+        run: |
+          cd /tmp/drupal
+          vendor/bin/phpunit --bootstrap web/core/tests/bootstrap.php web/modules/custom/kwtsms/tests/src/Unit/ --no-coverage

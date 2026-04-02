@@ -1,0 +1,38 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build release archive
+        run: |
+          mkdir -p /tmp/kwtsms
+          rsync -a --exclude='.git' --exclude='.github' --exclude='.gitignore' \
+            --exclude='docs' --exclude='.claude' --exclude='.remember' \
+            --exclude='CLAUDE.md' --exclude='tests' --exclude='.env*' \
+            . /tmp/kwtsms/
+          cd /tmp && tar -czf kwtsms-${{ steps.version.outputs.version }}.tar.gz kwtsms/
+          cd /tmp && zip -r kwtsms-${{ steps.version.outputs.version }}.zip kwtsms/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: |
+            /tmp/kwtsms-${{ steps.version.outputs.version }}.tar.gz
+            /tmp/kwtsms-${{ steps.version.outputs.version }}.zip
