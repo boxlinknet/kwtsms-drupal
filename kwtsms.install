@@ -79,7 +79,7 @@ function kwtsms_schema(): array {
       ],
       'error_code' => [
         'type' => 'varchar',
-        'length' => 10,
+        'length' => 32,
         'not null' => FALSE,
         'default' => NULL,
         'description' => 'kwtSMS error code if failed.',

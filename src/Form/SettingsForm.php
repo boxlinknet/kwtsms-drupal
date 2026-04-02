@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;

@@ -797,14 +797,12 @@ class KwtsmsGateway {
    *   data is not in an expected format.
    */
   private function isCovered(string $number, array $coverage): bool {
-    $prefixes = $coverage['prefixes'] ?? $coverage['prefix'] ?? NULL;
-
-    if (!is_array($prefixes)) {
-      // Permissive fallback: cannot determine coverage, allow through.
+    // Coverage is stored as a flat array of prefix strings: ['965', '966', ...].
+    if (empty($coverage)) {
       return TRUE;
     }
 
-    foreach ($prefixes as $prefix) {
+    foreach ($coverage as $prefix) {
       if (str_starts_with($number, (string) $prefix)) {
         return TRUE;
       }
