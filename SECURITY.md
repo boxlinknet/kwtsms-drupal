@@ -4,7 +4,7 @@
 
 If you discover a security vulnerability in the kwtSMS module, please report it responsibly.
 
-**Email:** support@kwtsms.com
+**Contact:** [kwtsms.com/support.html](https://www.kwtsms.com/support.html)
 
 **What to include:**
 - Description of the vulnerability

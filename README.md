@@ -121,10 +121,10 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 ## Support
 
 - **Support portal**: [kwtsms.com/support.html](https://www.kwtsms.com/support.html)
-- **FAQ**: [kwtsms.com/faq_all.php](https://www.kwtsms.com/faq_all.php)
+- **FAQ**: [kwtsms.com/faq/](https://www.kwtsms.com/faq/)
 - **Sender ID help**: [kwtsms.com/sender-id-help.html](https://www.kwtsms.com/sender-id-help.html)
 - **Issues**: [github.com/boxlinknet/kwtsms-drupal/issues](https://github.com/boxlinknet/kwtsms-drupal/issues)
-- **Email**: support@kwtsms.com
+- **Email**: [kwtsms.com/support.html](https://www.kwtsms.com/support.html)
 
 ## License
 
@@ -132,4 +132,4 @@ GPL-2.0-or-later. See [LICENSE](LICENSE) for details.
 
 ## Maintainers
 
-[kwtSMS](https://www.kwtsms.com) (support@kwtsms.com)
+[kwtSMS](https://www.kwtsms.com)
