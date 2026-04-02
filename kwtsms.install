@@ -267,6 +267,9 @@ function kwtsms_install(): void {
     ->set('notify_user_registered_customer', FALSE)
     ->set('notify_user_registered_admin', FALSE)
     ->set('admin_phones', '')
+    ->set('commerce_order_placed', TRUE)
+    ->set('commerce_order_completed', TRUE)
+    ->set('commerce_order_canceled', FALSE)
     ->save();
 }
 

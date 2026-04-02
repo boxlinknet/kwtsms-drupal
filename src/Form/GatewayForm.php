@@ -110,12 +110,9 @@ class GatewayForm extends FormBase {
         $senderList = $this->t('None cached');
       }
 
-      // Format coverage: count entries or show a summary.
-      if (is_array($coverage)) {
-        $prefixes = $coverage['prefixes'] ?? $coverage['prefix'] ?? [];
-        $coverageText = is_array($prefixes)
-          ? $this->t('@count prefixes covered', ['@count' => count($prefixes)])
-          : $this->t('Cached (format unknown)');
+      // Format coverage: stored as flat array of prefix strings.
+      if (is_array($coverage) && !empty($coverage)) {
+        $coverageText = implode(', ', $coverage);
       }
       else {
         $coverageText = $this->t('Not cached');

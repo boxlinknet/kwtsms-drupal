@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;
@@ -18,26 +20,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SettingsForm extends ConfigFormBase {
 
   /**
-   * Constructs a SettingsForm instance.
-   *
-   * @param \Drupal\kwtsms\Service\KwtsmsGateway $gateway
-   *   The kwtSMS gateway service.
+   * The kwtSMS gateway service.
    */
-  public function __construct(
-    private readonly KwtsmsGateway $gateway,
-  ) {
-    // ConfigFormBase requires the config.factory service injected via parent.
-  }
+  private readonly KwtsmsGateway $gateway;
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
     $instance = new static(
-      $container->get('kwtsms.gateway'),
+      $container->get('config.factory'),
+      $container->get('config.typed'),
     );
-    $instance->setConfigFactory($container->get('config.factory'));
-    $instance->setStringTranslation($container->get('string_translation'));
+    $instance->gateway = $container->get('kwtsms.gateway');
     return $instance;
   }
 

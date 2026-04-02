@@ -20,11 +20,10 @@ class IntegrationsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
-    $instance = new static(
+    return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
     );
-    $instance->setStringTranslation($container->get('string_translation'));
-    return $instance;
   }
 
   /**

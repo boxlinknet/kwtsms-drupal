@@ -58,9 +58,14 @@ class LogsForm extends FormBase {
     // Persist filters across rebuilds.
     $filters = $form_state->get('filters') ?? [];
 
+    $form['#attached']['library'][] = 'kwtsms/admin';
+
     $form['filters'] = [
-      '#type'  => 'fieldset',
-      '#title' => $this->t('Filter Logs'),
+      '#type'  => 'container',
+      '#attributes' => [
+        'class' => ['kwtsms-filters-row'],
+        'style' => 'display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;padding:16px;border:1px solid #E4E4E7;border-radius:8px;margin-bottom:20px;background:#fff;',
+      ],
     ];
 
     $form['filters']['status'] = [
@@ -73,6 +78,7 @@ class LogsForm extends FormBase {
         'skipped' => $this->t('Skipped'),
       ],
       '#default_value' => $filters['status'] ?? '',
+      '#wrapper_attributes' => ['style' => 'flex:1 1 140px;max-width:180px;margin:0;'],
     ];
 
     $form['filters']['event_type'] = [
@@ -86,18 +92,21 @@ class LogsForm extends FormBase {
         'order_placed'   => $this->t('Order Placed'),
       ],
       '#default_value' => $filters['event_type'] ?? '',
+      '#wrapper_attributes' => ['style' => 'flex:1 1 140px;max-width:180px;margin:0;'],
     ];
 
     $form['filters']['date_from'] = [
       '#type'          => 'date',
       '#title'         => $this->t('Date from'),
       '#default_value' => $filters['date_from'] ?? '',
+      '#wrapper_attributes' => ['style' => 'flex:1 1 130px;max-width:170px;margin:0;'],
     ];
 
     $form['filters']['date_to'] = [
       '#type'          => 'date',
       '#title'         => $this->t('Date to'),
       '#default_value' => $filters['date_to'] ?? '',
+      '#wrapper_attributes' => ['style' => 'flex:1 1 130px;max-width:170px;margin:0;'],
     ];
 
     $form['filters']['filter'] = [

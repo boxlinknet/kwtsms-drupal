@@ -59,6 +59,15 @@ kwtsms.settings:
     admin_phones:
       type: string
       label: 'Admin phone numbers (comma-separated)'
+    commerce_order_placed:
+      type: boolean
+      label: 'SMS on order placed'
+    commerce_order_completed:
+      type: boolean
+      label: 'SMS on order completed'
+    commerce_order_canceled:
+      type: boolean
+      label: 'SMS on order canceled'
 
 kwtsms.template.*:
   type: config_entity

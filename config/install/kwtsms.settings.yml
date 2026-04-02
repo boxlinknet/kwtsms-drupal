@@ -16,3 +16,6 @@ otp_resend_cooldown: 60
 notify_user_registered_customer: false
 notify_user_registered_admin: false
 admin_phones: ''
+commerce_order_placed: true
+commerce_order_completed: true
+commerce_order_canceled: false

@@ -36,6 +36,16 @@ function kwtsms_help(string $route_name, RouteMatchInterface $route_match): stri
 }
 
 /**
+ * Implements hook_page_attachments().
+ */
+function kwtsms_page_attachments(array &$attachments): void {
+  $route = \Drupal::routeMatch()->getRouteName() ?? '';
+  if (str_starts_with($route, 'kwtsms.')) {
+    $attachments['#attached']['library'][] = 'kwtsms/admin';
+  }
+}
+
+/**
  * Implements hook_token_info().
  */
 function kwtsms_token_info(): array {
