@@ -20,6 +20,7 @@ docs/
 
 # Testing
 test/
+tests/
 .playwright*
 
 # Docker
