@@ -116,7 +116,7 @@ class TwoFactorVerifyForm extends FormBase {
     $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
 
     if ($user === NULL || $user->isBlocked()) {
-      $this->messenger()->addError($this->t('Your account is not active. Please contact the site administrator.'));
+      $this->messenger()->addError($this->t('Invalid or expired code.'));
       $store->delete('2fa_uid');
       $form_state->setRedirectUrl(Url::fromRoute('user.login'));
       return;

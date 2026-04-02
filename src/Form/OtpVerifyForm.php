@@ -99,14 +99,13 @@ class OtpVerifyForm extends FormBase {
     $result = $this->otpProvider->verifyOtp($phone, $code, 'login');
 
     if (!$result['valid']) {
-      $this->messenger()->addError($this->t('@reason', ['@reason' => $result['reason']]));
+      $this->messenger()->addError($this->t('Invalid or expired code.'));
       return;
     }
 
     $uid = $result['uid'];
 
     if ($uid <= 0) {
-      // OTP was valid but no account is associated: treat as failure.
       $this->messenger()->addError($this->t('Invalid or expired code.'));
       return;
     }
@@ -136,7 +135,7 @@ class OtpVerifyForm extends FormBase {
     $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
 
     if ($user === NULL || $user->isBlocked()) {
-      $this->messenger()->addError($this->t('Your account is not active. Please contact the site administrator.'));
+      $this->messenger()->addError($this->t('Invalid or expired code.'));
       return;
     }
 
