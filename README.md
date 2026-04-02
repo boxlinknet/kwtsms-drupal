@@ -145,7 +145,6 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 - **FAQ**: [kwtsms.com/faq/](https://www.kwtsms.com/faq/)
 - **Sender ID help**: [kwtsms.com/sender-id-help.html](https://www.kwtsms.com/sender-id-help.html)
 - **Issues**: [github.com/boxlinknet/kwtsms-drupal/issues](https://github.com/boxlinknet/kwtsms-drupal/issues)
-- **Email**: [kwtsms.com/support.html](https://www.kwtsms.com/support.html)
 
 ## License
 
