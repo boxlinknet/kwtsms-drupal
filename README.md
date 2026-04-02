@@ -118,6 +118,27 @@ kwtsms/                          Base module (standalone)
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
+## Roadmap
+
+**v1.1 (next)**
+- Commerce abandoned cart SMS reminders
+- Low stock alerts (admin notification)
+- Shipping status update notifications
+- SMS Framework v4 gateway plugin (bridge submodule)
+- CAPTCHA integration point for OTP forms
+- Log retention policy (auto-delete after configurable days)
+
+**v1.2**
+- Bulk SMS send from admin UI
+- Scheduled/marketing SMS campaigns
+- Webform integration submodule
+- IP blacklist/VPN filtering for OTP abuse prevention
+
+**v1.3**
+- SMS delivery analytics dashboard (success rates, trends)
+- Audit log with export for compliance
+- Multi-gateway failover support
+
 ## Support
 
 - **Support portal**: [kwtsms.com/support.html](https://www.kwtsms.com/support.html)
