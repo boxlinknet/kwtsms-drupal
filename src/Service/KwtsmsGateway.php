@@ -239,10 +239,10 @@ class KwtsmsGateway {
       $this->setCachedValue('senderids', $senderResponse['senderid'] ?? []);
     }
 
-    // Fetch and cache coverage.
+    // Fetch and cache coverage (extract prefixes array only).
     $coverageResponse = $this->apiCall('coverage/', $payload);
     if ($coverageResponse !== NULL && ($coverageResponse['result'] ?? '') === 'OK') {
-      $this->setCachedValue('coverage', $coverageResponse);
+      $this->setCachedValue('coverage', $coverageResponse['prefixes'] ?? []);
     }
 
     $this->logger->info('kwtSMS: gateway connected as @user.', ['@user' => $username]);
@@ -312,7 +312,7 @@ class KwtsmsGateway {
 
     $coverageResponse = $this->apiCall('coverage/', $credentials);
     if ($coverageResponse !== NULL && ($coverageResponse['result'] ?? '') === 'OK') {
-      $this->setCachedValue('coverage', $coverageResponse);
+      $this->setCachedValue('coverage', $coverageResponse['prefixes'] ?? []);
     }
 
     $this->logger->info('kwtSMS: sync completed. Balance: @balance.', ['@balance' => $balance ?? 'unknown']);

@@ -167,7 +167,7 @@ class PhoneNormalizer {
    */
   public function detectCountryCode(string $phone): ?string {
     // Sort by prefix length descending to prefer the longest match.
-    $prefixes = array_keys(self::COUNTRY_LENGTHS);
+    $prefixes = array_map('strval', array_keys(self::COUNTRY_LENGTHS));
     usort($prefixes, static fn(string $a, string $b): int => strlen($b) - strlen($a));
 
     foreach ($prefixes as $prefix) {
