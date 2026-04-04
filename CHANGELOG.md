@@ -2,6 +2,24 @@
 
 All notable changes to the kwtSMS module will be documented in this file.
 
+## [1.1.0] - 2026-04-05
+
+### Added
+- Log retention policy: auto-delete SMS logs older than configurable days (default 90)
+- OTP request event (`kwtsms.otp_request`) for CAPTCHA and validation module integration
+- SMS send event (`kwtsms.sms_send`) for pre-send hooks by other modules
+- Commerce: low stock SMS alerts to admin when product stock drops below threshold
+- Commerce: shipping status update notifications to customers
+- Commerce: abandoned cart SMS reminders via cron (configurable hours)
+- SMS Framework bridge submodule (`kwtsms_smsframework`) for SMS Framework v2 gateway plugin
+- New templates: low_stock, shipping_update, abandoned_cart
+- Integrations form: toggles for shipping, low stock threshold, and abandoned cart settings
+
+### Fixed
+- Coverage filter now correctly uses flat prefix array instead of nested response
+- `error_code` column widened from varchar(10) to varchar(32)
+- Generic error messages on all OTP/2FA forms to prevent account enumeration
+
 ## [1.0.0] - 2026-03-27
 
 ### Added

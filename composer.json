@@ -13,11 +13,13 @@
   },
   "suggest": {
     "drupal/commerce": "Enable kwtsms_commerce submodule for order SMS notifications",
-    "drupal/token": "Provides a token browser UI for SMS template editing"
+    "drupal/commerce_shipping": "Enable shipping status SMS notifications",
+    "drupal/token": "Provides a token browser UI for SMS template editing",
+    "drupal/smsframework": "Enable kwtsms_smsframework bridge for SMS Framework integration"
   },
   "extra": {
     "drupal": {
-      "version": "1.0.0",
+      "version": "1.1.0",
       "datestamp": ""
     }
   }
