@@ -19,4 +19,9 @@ admin_phones: ''
 commerce_order_placed: true
 commerce_order_completed: true
 commerce_order_canceled: false
+commerce_low_stock_enabled: false
+commerce_low_stock_threshold: 5
+commerce_shipping_enabled: false
+commerce_abandoned_cart_enabled: false
+commerce_abandoned_cart_hours: 24
 log_retention_days: 90

@@ -1,0 +1,9 @@
+id: abandoned_cart
+label: 'Abandoned Cart Reminder'
+category: commerce
+body_en: 'Hi [commerce_order:billing-profile:entity:address:given_name], you have items in your cart on [site:name]. Complete your order before they sell out!'
+body_ar: 'مرحبا [commerce_order:billing-profile:entity:address:given_name]، لديك منتجات في سلتك على [site:name]. اكمل طلبك قبل نفاد الكمية!'
+default_body_en: 'Hi [commerce_order:billing-profile:entity:address:given_name], you have items in your cart on [site:name]. Complete your order before they sell out!'
+default_body_ar: 'مرحبا [commerce_order:billing-profile:entity:address:given_name]، لديك منتجات في سلتك على [site:name]. اكمل طلبك قبل نفاد الكمية!'
+recipient_type: customer
+system: true

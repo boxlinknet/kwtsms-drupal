@@ -1,0 +1,9 @@
+id: shipping_update
+label: 'Shipping Update'
+category: commerce
+body_en: 'Your order #[commerce_order:order-number] shipping status: [kwtsms:shipping-status]. Track your delivery on [site:name].'
+body_ar: 'طلبك #[commerce_order:order-number] حالة الشحن: [kwtsms:shipping-status]. تتبع التسليم على [site:name].'
+default_body_en: 'Your order #[commerce_order:order-number] shipping status: [kwtsms:shipping-status]. Track your delivery on [site:name].'
+default_body_ar: 'طلبك #[commerce_order:order-number] حالة الشحن: [kwtsms:shipping-status]. تتبع التسليم على [site:name].'
+recipient_type: customer
+system: true

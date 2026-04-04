@@ -1,0 +1,9 @@
+id: low_stock
+label: 'Low Stock Alert'
+category: commerce
+body_en: 'Low stock alert: [commerce_product:title] has only [kwtsms:stock-level] units remaining on [site:name].'
+body_ar: 'تنبيه مخزون منخفض: [commerce_product:title] متبقي [kwtsms:stock-level] وحدات فقط على [site:name].'
+default_body_en: 'Low stock alert: [commerce_product:title] has only [kwtsms:stock-level] units remaining on [site:name].'
+default_body_ar: 'تنبيه مخزون منخفض: [commerce_product:title] متبقي [kwtsms:stock-level] وحدات فقط على [site:name].'
+recipient_type: admin
+system: true

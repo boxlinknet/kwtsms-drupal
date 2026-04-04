@@ -9,3 +9,12 @@ services:
       - '@entity_type.manager'
     tags:
       - { name: event_subscriber }
+  kwtsms_commerce.cron_subscriber:
+    class: Drupal\kwtsms_commerce\EventSubscriber\CommerceCronSubscriber
+    arguments:
+      - '@kwtsms.gateway'
+      - '@kwtsms.template_renderer'
+      - '@kwtsms.logger'
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@datetime.time'

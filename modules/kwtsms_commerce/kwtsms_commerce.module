@@ -8,7 +8,18 @@
  *
  * Related files:
  *   - src/EventSubscriber/OrderEventSubscriber.php
+ *   - src/EventSubscriber/CommerceCronSubscriber.php
  *   - kwtsms_commerce.services.yml
  */
 
 declare(strict_types=1);
+
+/**
+ * Implements hook_cron().
+ */
+function kwtsms_commerce_cron(): void {
+  /** @var \Drupal\kwtsms_commerce\EventSubscriber\CommerceCronSubscriber $cronSubscriber */
+  $cronSubscriber = \Drupal::service('kwtsms_commerce.cron_subscriber');
+  $cronSubscriber->checkLowStock();
+  $cronSubscriber->checkAbandonedCarts();
+}

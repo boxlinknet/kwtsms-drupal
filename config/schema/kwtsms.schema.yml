@@ -71,6 +71,21 @@ kwtsms.settings:
     commerce_order_canceled:
       type: boolean
       label: 'SMS on order canceled'
+    commerce_low_stock_enabled:
+      type: boolean
+      label: 'Enable low stock SMS alerts'
+    commerce_low_stock_threshold:
+      type: integer
+      label: 'Low stock threshold'
+    commerce_shipping_enabled:
+      type: boolean
+      label: 'Enable shipping status SMS'
+    commerce_abandoned_cart_enabled:
+      type: boolean
+      label: 'Enable abandoned cart SMS reminders'
+    commerce_abandoned_cart_hours:
+      type: integer
+      label: 'Hours before cart is considered abandoned'
 
 kwtsms.template.*:
   type: config_entity

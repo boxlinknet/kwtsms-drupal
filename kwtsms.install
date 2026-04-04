@@ -270,6 +270,11 @@ function kwtsms_install(): void {
     ->set('commerce_order_placed', TRUE)
     ->set('commerce_order_completed', TRUE)
     ->set('commerce_order_canceled', FALSE)
+    ->set('commerce_low_stock_enabled', FALSE)
+    ->set('commerce_low_stock_threshold', 5)
+    ->set('commerce_shipping_enabled', FALSE)
+    ->set('commerce_abandoned_cart_enabled', FALSE)
+    ->set('commerce_abandoned_cart_hours', 24)
     ->set('log_retention_days', 90)
     ->save();
 }

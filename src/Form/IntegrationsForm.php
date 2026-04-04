@@ -85,6 +85,65 @@ class IntegrationsForm extends ConfigFormBase {
         '#description'   => $this->t('Send an SMS when an order is canceled.'),
         '#default_value' => (bool) $config->get('commerce_order_canceled'),
       ];
+
+      $form['commerce']['commerce_shipping_enabled'] = [
+        '#type'          => 'checkbox',
+        '#title'         => $this->t('Shipping status updates'),
+        '#description'   => $this->t('Send an SMS to the customer when a shipment is shipped or canceled (requires Commerce Shipping).'),
+        '#default_value' => (bool) $config->get('commerce_shipping_enabled'),
+      ];
+
+      $form['commerce']['low_stock'] = [
+        '#type'  => 'fieldset',
+        '#title' => $this->t('Low Stock Alerts'),
+      ];
+
+      $form['commerce']['low_stock']['commerce_low_stock_enabled'] = [
+        '#type'          => 'checkbox',
+        '#title'         => $this->t('Enable low stock alerts'),
+        '#description'   => $this->t('Send an SMS to admin phones when a product variation stock falls at or below the threshold (requires field_stock on variations, checked via cron).'),
+        '#default_value' => (bool) $config->get('commerce_low_stock_enabled'),
+      ];
+
+      $form['commerce']['low_stock']['commerce_low_stock_threshold'] = [
+        '#type'          => 'number',
+        '#title'         => $this->t('Low stock threshold'),
+        '#description'   => $this->t('Send an alert when stock is at or below this quantity.'),
+        '#default_value' => (int) ($config->get('commerce_low_stock_threshold') ?? 5),
+        '#min'           => 1,
+        '#max'           => 1000,
+        '#states'        => [
+          'visible' => [
+            ':input[name="commerce_low_stock_enabled"]' => ['checked' => TRUE],
+          ],
+        ],
+      ];
+
+      $form['commerce']['abandoned_cart'] = [
+        '#type'  => 'fieldset',
+        '#title' => $this->t('Abandoned Cart Reminders'),
+      ];
+
+      $form['commerce']['abandoned_cart']['commerce_abandoned_cart_enabled'] = [
+        '#type'          => 'checkbox',
+        '#title'         => $this->t('Enable abandoned cart reminders'),
+        '#description'   => $this->t('Send an SMS reminder to customers who have items in their cart but have not completed checkout (checked via cron).'),
+        '#default_value' => (bool) $config->get('commerce_abandoned_cart_enabled'),
+      ];
+
+      $form['commerce']['abandoned_cart']['commerce_abandoned_cart_hours'] = [
+        '#type'          => 'number',
+        '#title'         => $this->t('Hours until cart is considered abandoned'),
+        '#description'   => $this->t('Send a reminder after this many hours of inactivity.'),
+        '#default_value' => (int) ($config->get('commerce_abandoned_cart_hours') ?? 24),
+        '#min'           => 1,
+        '#max'           => 168,
+        '#states'        => [
+          'visible' => [
+            ':input[name="commerce_abandoned_cart_enabled"]' => ['checked' => TRUE],
+          ],
+        ],
+      ];
     }
 
     // Future integrations placeholder.
@@ -114,7 +173,12 @@ class IntegrationsForm extends ConfigFormBase {
       $config
         ->set('commerce_order_placed', (bool) $form_state->getValue('commerce_order_placed'))
         ->set('commerce_order_completed', (bool) $form_state->getValue('commerce_order_completed'))
-        ->set('commerce_order_canceled', (bool) $form_state->getValue('commerce_order_canceled'));
+        ->set('commerce_order_canceled', (bool) $form_state->getValue('commerce_order_canceled'))
+        ->set('commerce_shipping_enabled', (bool) $form_state->getValue('commerce_shipping_enabled'))
+        ->set('commerce_low_stock_enabled', (bool) $form_state->getValue('commerce_low_stock_enabled'))
+        ->set('commerce_low_stock_threshold', (int) $form_state->getValue('commerce_low_stock_threshold'))
+        ->set('commerce_abandoned_cart_enabled', (bool) $form_state->getValue('commerce_abandoned_cart_enabled'))
+        ->set('commerce_abandoned_cart_hours', (int) $form_state->getValue('commerce_abandoned_cart_hours'));
     }
 
     $config->save();

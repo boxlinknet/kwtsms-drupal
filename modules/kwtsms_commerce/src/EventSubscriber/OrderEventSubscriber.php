@@ -48,6 +48,8 @@ class OrderEventSubscriber implements EventSubscriberInterface {
       'commerce_order.place.post_transition' => ['onOrderPlaced'],
       'commerce_order.fulfill.post_transition' => ['onOrderTransition'],
       'commerce_order.cancel.post_transition' => ['onOrderTransition'],
+      'commerce_shipment.ship.post_transition' => ['onShipmentUpdate'],
+      'commerce_shipment.cancel.post_transition' => ['onShipmentUpdate'],
     ];
   }
 
@@ -115,6 +117,52 @@ class OrderEventSubscriber implements EventSubscriberInterface {
       '@id' => $order->id(),
       '@transition' => $transitionId,
     ]);
+  }
+
+  /**
+   * Handles Commerce Shipping shipment transitions.
+   *
+   * Sends a shipping_update SMS to the customer when a shipment is shipped
+   * or canceled.
+   *
+   * @param \Drupal\state_machine\Event\WorkflowTransitionEvent $event
+   *   The workflow transition event.
+   */
+  public function onShipmentUpdate(WorkflowTransitionEvent $event): void {
+    $config = $this->configFactory->get('kwtsms.settings');
+    if (!$config->get('commerce_shipping_enabled')) {
+      return;
+    }
+
+    $shipment = $event->getEntity();
+    if (!method_exists($shipment, 'getOrder')) {
+      return;
+    }
+
+    $order = $shipment->getOrder();
+    if ($order === NULL) {
+      return;
+    }
+
+    $phone = $this->getOrderPhone($order);
+    if ($phone === '') {
+      return;
+    }
+
+    $transition = $event->getTransition();
+    $status = $transition->getToState()->getLabel();
+    $message = $this->templateRenderer->render('shipping_update', [
+      'commerce_order' => $order,
+    ], [
+      '[kwtsms:shipping-status]' => (string) $status,
+    ]);
+
+    if ($message !== NULL && $message !== '') {
+      $this->gateway->send([$phone], $message, 'shipping_' . $transition->getId(), [
+        'template_id' => 'shipping_update',
+        'uid' => (int) $order->getCustomerId(),
+      ]);
+    }
   }
 
   /**
