@@ -56,6 +56,21 @@ class CronSubscriber implements EventSubscriberInterface {
     if ($deleted > 0) {
       $this->smsLogger->debug('Cron: cleaned @count expired OTPs.', ['@count' => $deleted]);
     }
+
+    // Clean old SMS logs based on retention policy.
+    $retentionDays = (int) \Drupal::config('kwtsms.settings')->get('log_retention_days');
+    if ($retentionDays > 0) {
+      $cutoffLogs = $now - ($retentionDays * 86400);
+      $deletedLogs = $this->database->delete('kwtsms_sms_log')
+        ->condition('created', $cutoffLogs, '<')
+        ->execute();
+      if ($deletedLogs > 0) {
+        $this->smsLogger->info('Cron: cleaned @count SMS logs older than @days days.', [
+          '@count' => $deletedLogs,
+          '@days'  => $retentionDays,
+        ]);
+      }
+    }
   }
 
 }

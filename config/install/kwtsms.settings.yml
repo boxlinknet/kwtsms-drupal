@@ -19,3 +19,4 @@ admin_phones: ''
 commerce_order_placed: true
 commerce_order_completed: true
 commerce_order_canceled: false
+log_retention_days: 90

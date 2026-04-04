@@ -270,6 +270,7 @@ function kwtsms_install(): void {
     ->set('commerce_order_placed', TRUE)
     ->set('commerce_order_completed', TRUE)
     ->set('commerce_order_canceled', FALSE)
+    ->set('log_retention_days', 90)
     ->save();
 }
 

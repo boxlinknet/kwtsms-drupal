@@ -190,6 +190,15 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => (bool) $config->get('debug_logging'),
     ];
 
+    $form['logging']['log_retention_days'] = [
+      '#type'          => 'number',
+      '#title'         => $this->t('Log retention (days)'),
+      '#description'   => $this->t('Automatically delete SMS logs older than this many days. Set to 0 to keep forever.'),
+      '#default_value' => $config->get('log_retention_days') ?? 90,
+      '#min'           => 0,
+      '#max'           => 365,
+    ];
+
     // -------------------------------------------------------------------------
     // Rate limits section
     // -------------------------------------------------------------------------
@@ -299,6 +308,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('enabled', (bool) $form_state->getValue('enabled'))
       ->set('test_mode', (bool) $form_state->getValue('test_mode'))
       ->set('debug_logging', (bool) $form_state->getValue('debug_logging'))
+      ->set('log_retention_days', (int) $form_state->getValue('log_retention_days'))
       ->set('default_country_code', (string) $form_state->getValue('default_country_code'))
       ->set('sender_id', (string) $form_state->getValue('sender_id'))
       ->set('sms_language', (string) $form_state->getValue('sms_language'))

@@ -11,6 +11,9 @@ kwtsms.settings:
     debug_logging:
       type: boolean
       label: 'Debug logging enabled'
+    log_retention_days:
+      type: integer
+      label: 'Days to keep SMS logs (0 = keep forever)'
     default_country_code:
       type: string
       label: 'Default country code for local numbers'
