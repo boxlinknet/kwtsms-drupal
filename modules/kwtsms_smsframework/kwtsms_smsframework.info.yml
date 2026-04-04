@@ -1,0 +1,10 @@
+name: 'kwtSMS SMS Framework Bridge'
+type: module
+description: 'Registers kwtSMS as an SMS Framework gateway plugin.'
+package: kwtSMS
+core_version_requirement: ^10.3 || ^11
+php: 8.2
+
+dependencies:
+  - kwtsms:kwtsms
+  - sms:sms

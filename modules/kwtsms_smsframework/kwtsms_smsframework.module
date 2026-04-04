@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * @file
+ * Bridges kwtSMS with the SMS Framework module.
+ */
+
+declare(strict_types=1);
