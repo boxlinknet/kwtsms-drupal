@@ -135,6 +135,15 @@ class PasswordResetSmsForm extends FormBase {
       $phone = $this->phoneNormalizer->normalize(trim((string) $form_state->getValue('phone')));
     }
 
+    // Dispatch OTP request event (CAPTCHA integration point).
+    $event = new \Drupal\kwtsms\Event\OtpRequestEvent($phone, 'password_reset', \Drupal::request()->getClientIp() ?? '');
+    \Drupal::service('event_dispatcher')->dispatch($event, \Drupal\kwtsms\Event\OtpRequestEvent::EVENT_NAME);
+    if ($event->isBlocked()) {
+      // Silently log, don't reveal to user (anti-enumeration).
+      \Drupal::service('kwtsms.logger')->info('OTP request blocked: @reason', ['@reason' => $event->getBlockReason()]);
+      // Still show the same neutral message.
+    }
+
     // Look up the user without revealing whether an account exists.
     $uid  = $this->otpProvider->findUserByPhone($phone);
     $code = $this->otpProvider->generateOtp($phone, 'password_reset', $uid ?? 0);

@@ -134,6 +134,15 @@ class OtpLoginForm extends FormBase {
       $phone = $this->phoneNormalizer->normalize(trim((string) $form_state->getValue('phone')));
     }
 
+    // Dispatch OTP request event (CAPTCHA integration point).
+    $event = new \Drupal\kwtsms\Event\OtpRequestEvent($phone, 'login', \Drupal::request()->getClientIp() ?? '');
+    \Drupal::service('event_dispatcher')->dispatch($event, \Drupal\kwtsms\Event\OtpRequestEvent::EVENT_NAME);
+    if ($event->isBlocked()) {
+      // Silently log, don't reveal to user (anti-enumeration).
+      \Drupal::service('kwtsms.logger')->info('OTP request blocked: @reason', ['@reason' => $event->getBlockReason()]);
+      // Still show the same neutral message.
+    }
+
     // Look up user, but never reveal whether one was found (anti-enumeration).
     $uid  = $this->otpProvider->findUserByPhone($phone);
     $code = $this->otpProvider->generateOtp($phone, 'login', $uid ?? 0);
