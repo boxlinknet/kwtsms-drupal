@@ -1,8 +1,7 @@
 # kwtSMS for Drupal
 
-[![CI](https://github.com/boxlinknet/kwtsms-drupal/actions/workflows/ci.yml/badge.svg)](https://github.com/boxlinknet/kwtsms-drupal/actions/workflows/ci.yml)
 [![License: GPL v2+](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0)
-[![Drupal 10.3+](https://img.shields.io/badge/Drupal-10.3%2B%20%7C%2011-0678be.svg)](https://www.drupal.org)
+[![Drupal 10.3+](https://img.shields.io/badge/Drupal-10.3%2B%20%7C%2011-0678be.svg)](https://www.drupal.org/project/kwtsms)
 [![PHP 8.2+](https://img.shields.io/badge/PHP-8.2%2B-777BB4.svg)](https://www.php.net)
 [![kwtSMS](https://img.shields.io/badge/Gateway-kwtSMS.com-FFA200.svg)](https://www.kwtsms.com)
 
@@ -46,7 +45,7 @@ SMS gateway integration with [kwtSMS.com](https://www.kwtsms.com) for Drupal 10.
 - Phone normalization: Arabic/Hindi digit conversion, leading zero handling, country code prepend
 - Message cleaning: strip emoji, hidden Unicode chars, HTML tags
 - Drupal Token system integration with custom tokens: `[kwtsms:otp-code]`, `[kwtsms:sender-id]`, `[kwtsms:balance]`
-- Events for module integration: `kwtsms.otp_request` (CAPTCHA/validation) and `kwtsms.sms_send` (pre-send hooks)
+- Events for module integration: `kwtsms.otp_request` (pre-validation) and `kwtsms.sms_send` (pre-send hooks)
 - SMS Framework v2 gateway plugin via bridge submodule
 - Log retention policy: auto-delete logs older than configurable days
 - Daily cron sync for balance, sender IDs, and coverage
@@ -146,11 +145,11 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 - **Support portal**: [kwtsms.com/support.html](https://www.kwtsms.com/support.html)
 - **FAQ**: [kwtsms.com/faq/](https://www.kwtsms.com/faq/)
 - **Sender ID help**: [kwtsms.com/sender-id-help.html](https://www.kwtsms.com/sender-id-help.html)
-- **Issues**: [github.com/boxlinknet/kwtsms-drupal/issues](https://github.com/boxlinknet/kwtsms-drupal/issues)
+- **Issues**: [drupal.org/project/issues/kwtsms](https://www.drupal.org/project/issues/kwtsms)
 
 ## License
 
-GPL-2.0-or-later. See [LICENSE](LICENSE) for details.
+GPL-2.0-or-later. See [LICENSE.txt](LICENSE.txt) for details.
 
 ## Maintainers
 
