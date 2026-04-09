@@ -14,7 +14,7 @@ use Drupal\state_machine\Event\WorkflowTransitionEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Listens to Commerce order state machine transitions and sends SMS notifications.
+ * Listens to Commerce order transitions and sends SMS.
  */
 class OrderEventSubscriber implements EventSubscriberInterface {
 
@@ -69,22 +69,25 @@ class OrderEventSubscriber implements EventSubscriberInterface {
     $phone = $this->getOrderPhone($order);
 
     if ($phone !== '') {
-      $this->gateway->send(
-        [$phone],
-        $this->templateRenderer->render('order_placed', ['commerce_order' => $order]),
+      $msg = $this->templateRenderer->render(
         'order_placed',
-        [],
+        ['commerce_order' => $order]
       );
+      $this->gateway->send([$phone], $msg, 'order_placed');
     }
 
-    $adminPhones = $this->configFactory->get('kwtsms.settings')->get('admin_phones') ?? [];
+    $config = $this->configFactory->get('kwtsms.settings');
+    $adminPhones = $config->get('admin_phones') ?? [];
 
     if (!empty($adminPhones)) {
+      $adminMsg = $this->templateRenderer->render(
+        'order_paid_admin',
+        ['commerce_order' => $order]
+      );
       $this->gateway->send(
         $adminPhones,
-        $this->templateRenderer->render('order_paid_admin', ['commerce_order' => $order]),
+        $adminMsg,
         'order_paid_admin',
-        [],
       );
     }
   }
@@ -104,11 +107,14 @@ class OrderEventSubscriber implements EventSubscriberInterface {
     $phone = $this->getOrderPhone($order);
 
     if ($phone !== '') {
+      $statusMsg = $this->templateRenderer->render(
+        'order_status',
+        ['commerce_order' => $order]
+      );
       $this->gateway->send(
         [$phone],
-        $this->templateRenderer->render('order_status', ['commerce_order' => $order]),
+        $statusMsg,
         'order_status',
-        [],
       );
     }
 
@@ -158,10 +164,16 @@ class OrderEventSubscriber implements EventSubscriberInterface {
     ]);
 
     if ($message !== NULL && $message !== '') {
-      $this->gateway->send([$phone], $message, 'shipping_' . $transition->getId(), [
-        'template_id' => 'shipping_update',
-        'uid' => (int) $order->getCustomerId(),
-      ]);
+      $eventType = 'shipping_' . $transition->getId();
+      $this->gateway->send(
+        [$phone],
+        $message,
+        $eventType,
+        [
+          'template_id' => 'shipping_update',
+          'uid' => (int) $order->getCustomerId(),
+        ]
+      );
     }
   }
 
@@ -182,7 +194,9 @@ class OrderEventSubscriber implements EventSubscriberInterface {
     try {
       if ($order instanceof OrderInterface) {
         $billingProfile = $order->getBillingProfile();
-        if ($billingProfile !== NULL && $billingProfile->hasField('field_phone')) {
+        $hasPhone = $billingProfile !== NULL
+          && $billingProfile->hasField('field_phone');
+        if ($hasPhone) {
           $phoneValue = $billingProfile->get('field_phone')->value;
           if (!empty($phoneValue)) {
             return (string) $phoneValue;
@@ -191,7 +205,10 @@ class OrderEventSubscriber implements EventSubscriberInterface {
 
         // Fall back to customer user field_phone.
         $customer = $order->getCustomer();
-        if ($customer !== NULL && !$customer->isAnonymous() && $customer->hasField('field_phone')) {
+        $customerHasPhone = $customer !== NULL
+          && !$customer->isAnonymous()
+          && $customer->hasField('field_phone');
+        if ($customerHasPhone) {
           $phoneValue = $customer->get('field_phone')->value;
           if (!empty($phoneValue)) {
             return (string) $phoneValue;

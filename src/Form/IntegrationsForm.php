@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -17,13 +18,22 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class IntegrationsForm extends ConfigFormBase {
 
   /**
+   * The module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  private readonly ModuleHandlerInterface $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
-    return new static(
+    $instance = new static(
       $container->get('config.factory'),
       $container->get('config.typed'),
     );
+    $instance->moduleHandler = $container->get('module_handler');
+    return $instance;
   }
 
   /**
@@ -45,7 +55,7 @@ class IntegrationsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $config = $this->config('kwtsms.settings');
-    $commerceEnabled = \Drupal::moduleHandler()->moduleExists('kwtsms_commerce');
+    $commerceEnabled = $this->moduleHandler->moduleExists('kwtsms_commerce');
 
     // Commerce integration section.
     $form['commerce'] = [
@@ -165,7 +175,7 @@ class IntegrationsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state): void {
-    $commerceEnabled = \Drupal::moduleHandler()->moduleExists('kwtsms_commerce');
+    $commerceEnabled = $this->moduleHandler->moduleExists('kwtsms_commerce');
 
     $config = $this->config('kwtsms.settings');
 

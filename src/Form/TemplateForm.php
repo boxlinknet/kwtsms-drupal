@@ -44,7 +44,11 @@ class TemplateForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ?string $kwtsms_template = NULL): array {
+  public function buildForm(
+    array $form,
+    FormStateInterface $form_state,
+    ?string $kwtsms_template = NULL,
+  ): array {
     $template = NULL;
     $isNew = TRUE;
 
@@ -76,18 +80,35 @@ class TemplateForm extends FormBase {
 
     if ($isSystem) {
       $form['label'] = [
-        '#type'   => 'markup',
-        '#markup' => '<p><strong>' . $this->t('Label') . ':</strong> ' . htmlspecialchars((string) $template->label(), ENT_QUOTES, 'UTF-8') . '</p>',
+        '#type' => 'markup',
+        '#markup' => '<p>' . $this->t(
+          '<strong>Label:</strong> @value',
+          ['@value' => $template->label()]
+        ) . '</p>',
       ];
 
+      $categoryLabel = (string) (
+        $categoryOptions[$template->getCategory()]
+        ?? $template->getCategory()
+      );
       $form['category'] = [
-        '#type'   => 'markup',
-        '#markup' => '<p><strong>' . $this->t('Category') . ':</strong> ' . htmlspecialchars((string) ($categoryOptions[$template->getCategory()] ?? $template->getCategory()), ENT_QUOTES, 'UTF-8') . '</p>',
+        '#type' => 'markup',
+        '#markup' => '<p>' . $this->t(
+          '<strong>Category:</strong> @value',
+          ['@value' => $categoryLabel]
+        ) . '</p>',
       ];
 
+      $recipientLabel = (string) (
+        $recipientOptions[$template->getRecipientType()]
+        ?? $template->getRecipientType()
+      );
       $form['recipient_type'] = [
-        '#type'   => 'markup',
-        '#markup' => '<p><strong>' . $this->t('Recipient Type') . ':</strong> ' . htmlspecialchars((string) ($recipientOptions[$template->getRecipientType()] ?? $template->getRecipientType()), ENT_QUOTES, 'UTF-8') . '</p>',
+        '#type' => 'markup',
+        '#markup' => '<p>' . $this->t(
+          '<strong>Recipient Type:</strong> @value',
+          ['@value' => $recipientLabel]
+        ) . '</p>',
       ];
     }
     else {
@@ -116,7 +137,9 @@ class TemplateForm extends FormBase {
         '#type'          => 'select',
         '#title'         => $this->t('Category'),
         '#options'       => $categoryOptions,
-        '#default_value' => $template !== NULL ? $template->getCategory() : 'notifications',
+        '#default_value' => $template !== NULL
+          ? $template->getCategory()
+          : 'notifications',
         '#required'      => TRUE,
       ];
 
@@ -124,11 +147,14 @@ class TemplateForm extends FormBase {
         '#type'          => 'select',
         '#title'         => $this->t('Recipient Type'),
         '#options'       => $recipientOptions,
-        '#default_value' => $template !== NULL ? $template->getRecipientType() : 'customer',
+        '#default_value' => $template !== NULL
+          ? $template->getRecipientType()
+          : 'customer',
         '#required'      => TRUE,
       ];
     }
 
+    // phpcs:ignore Drupal.Files.LineLength.TooLong
     $tokenHelp = $this->t('Available tokens: [site:name], [user:display-name], [user:mail], [kwtsms:otp-code], [kwtsms:sender-id], [kwtsms:balance]');
 
     $form['body_en'] = [
@@ -136,7 +162,8 @@ class TemplateForm extends FormBase {
       '#title'         => $this->t('Message body (English)'),
       '#default_value' => $template !== NULL ? $template->getBodyEn() : '',
       '#rows'          => 5,
-      '#description'   => $this->t('Standard SMS: up to 160 characters (1 page). Unicode SMS (Arabic/emoji): up to 70 characters (1 page).') . ' ' . $tokenHelp,
+      // phpcs:ignore Drupal.Files.LineLength.TooLong
+      '#description' => $this->t('Standard SMS: up to 160 characters (1 page). Unicode SMS (Arabic/emoji): up to 70 characters (1 page).') . ' ' . $tokenHelp,
       '#required'      => TRUE,
     ];
 
@@ -189,7 +216,10 @@ class TemplateForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state): void {
+  public function submitForm(
+    array &$form,
+    FormStateInterface $form_state,
+  ): void {
     $templateId = $form_state->get('kwtsms_template_id');
 
     if ($templateId === NULL) {
@@ -219,12 +249,16 @@ class TemplateForm extends FormBase {
       }
 
       $template->set('body_en', $form_state->getValue('body_en'));
-      $template->set('body_ar', (string) ($form_state->getValue('body_ar') ?? ''));
+      $bodyAr = (string) ($form_state->getValue('body_ar') ?? '');
+      $template->set('body_ar', $bodyAr);
 
       if (!$template->isSystem()) {
         $template->set('label', $form_state->getValue('label'));
         $template->set('category', $form_state->getValue('category'));
-        $template->set('recipient_type', $form_state->getValue('recipient_type'));
+        $template->set(
+          'recipient_type',
+          $form_state->getValue('recipient_type')
+        );
       }
     }
 
@@ -245,7 +279,10 @@ class TemplateForm extends FormBase {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current form state.
    */
-  public function deleteTemplate(array &$form, FormStateInterface $form_state): void {
+  public function deleteTemplate(
+    array &$form,
+    FormStateInterface $form_state,
+  ): void {
     $templateId = $form_state->get('kwtsms_template_id');
 
     if ($templateId === NULL) {
@@ -265,9 +302,11 @@ class TemplateForm extends FormBase {
     $label = $template->label();
     $template->delete();
 
-    $this->messenger()->addStatus($this->t('Template %label has been deleted.', [
-      '%label' => $label,
-    ]));
+    $this->messenger()->addStatus(
+      $this->t('Template %label has been deleted.', [
+        '%label' => $label,
+      ])
+    );
 
     $form_state->setRedirectUrl(Url::fromRoute('kwtsms.templates'));
   }

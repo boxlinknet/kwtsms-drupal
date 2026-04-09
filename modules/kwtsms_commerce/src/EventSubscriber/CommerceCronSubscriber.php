@@ -7,7 +7,7 @@ namespace Drupal\kwtsms_commerce\EventSubscriber;
 use Drupal\commerce_order\Entity\OrderInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Time\TimeInterface;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;
 use Drupal\kwtsms\Service\SmsLogger;
 use Drupal\kwtsms\Service\TemplateRenderer;
@@ -32,7 +32,7 @@ class CommerceCronSubscriber {
    *   The config factory service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager service.
-   * @param \Drupal\Core\Time\TimeInterface $time
+   * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
    */
   public function __construct(
@@ -62,16 +62,20 @@ class CommerceCronSubscriber {
       return;
     }
 
-    if (!$this->entityTypeManager->hasDefinition('commerce_product_variation')) {
+    $hasVariations = $this->entityTypeManager
+      ->hasDefinition('commerce_product_variation');
+    if (!$hasVariations) {
       return;
     }
 
-    $phones = array_values(array_filter(array_map('trim', explode(',', $adminPhones))));
+    $phones = array_map('trim', explode(',', $adminPhones));
+    $phones = array_values(array_filter($phones));
     if (empty($phones)) {
       return;
     }
 
-    $storage = $this->entityTypeManager->getStorage('commerce_product_variation');
+    $storage = $this->entityTypeManager
+      ->getStorage('commerce_product_variation');
     $query = $storage->getQuery()->accessCheck(FALSE);
 
     try {
@@ -81,7 +85,10 @@ class CommerceCronSubscriber {
         ->execute();
     }
     catch (\Exception $e) {
-      $this->smsLogger->debug('Low stock check skipped: @msg', ['@msg' => $e->getMessage()]);
+      $this->smsLogger->debug(
+        'Low stock check skipped: @msg',
+        ['@msg' => $e->getMessage()]
+      );
       return;
     }
 
@@ -92,7 +99,9 @@ class CommerceCronSubscriber {
     $variations = $storage->loadMultiple($ids);
     foreach ($variations as $variation) {
       $stockLevel = (int) $variation->get('field_stock')->value;
-      $product = method_exists($variation, 'getProduct') ? $variation->getProduct() : NULL;
+      $product = method_exists($variation, 'getProduct')
+        ? $variation->getProduct()
+        : NULL;
 
       $message = $this->templateRenderer->render('low_stock', [
         'commerce_product' => $product,
@@ -109,7 +118,9 @@ class CommerceCronSubscriber {
   }
 
   /**
-   * Finds draft orders with items older than the configured threshold and sends reminders.
+   * Finds draft orders older than the configured threshold.
+   *
+   * Sends abandoned cart reminder SMS messages.
    *
    * Only processes orders within a 24-hour window past the threshold to avoid
    * re-sending on subsequent cron runs.
@@ -181,7 +192,9 @@ class CommerceCronSubscriber {
     try {
       if ($order instanceof OrderInterface) {
         $billingProfile = $order->getBillingProfile();
-        if ($billingProfile !== NULL && $billingProfile->hasField('field_phone')) {
+        $hasPhone = $billingProfile !== NULL
+          && $billingProfile->hasField('field_phone');
+        if ($hasPhone) {
           $phoneValue = $billingProfile->get('field_phone')->value;
           if (!empty($phoneValue)) {
             return (string) $phoneValue;
@@ -189,7 +202,10 @@ class CommerceCronSubscriber {
         }
 
         $customer = $order->getCustomer();
-        if ($customer !== NULL && !$customer->isAnonymous() && $customer->hasField('field_phone')) {
+        $customerHasPhone = $customer !== NULL
+          && !$customer->isAnonymous()
+          && $customer->hasField('field_phone');
+        if ($customerHasPhone) {
           $phoneValue = $customer->get('field_phone')->value;
           if (!empty($phoneValue)) {
             return (string) $phoneValue;
@@ -198,10 +214,16 @@ class CommerceCronSubscriber {
       }
     }
     catch (\Exception $e) {
-      $this->smsLogger->error('Failed to resolve phone for order @id: @message', [
-        '@id' => method_exists($order, 'id') ? $order->id() : 'unknown',
-        '@message' => $e->getMessage(),
-      ]);
+      $orderId = method_exists($order, 'id')
+        ? $order->id()
+        : 'unknown';
+      $this->smsLogger->error(
+        'Failed to resolve phone for order @id: @message',
+        [
+          '@id' => $orderId,
+          '@message' => $e->getMessage(),
+        ]
+      );
     }
 
     return '';

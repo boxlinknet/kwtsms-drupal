@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
-use Drupal\user\Entity\User;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -27,10 +27,13 @@ class OtpVerifyForm extends FormBase {
    *   The OTP auth provider service.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
    *   The private tempstore factory.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager service.
    */
   public function __construct(
     private readonly OtpAuthProvider $otpProvider,
     private readonly PrivateTempStoreFactory $tempStoreFactory,
+    private readonly EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
   /**
@@ -40,6 +43,7 @@ class OtpVerifyForm extends FormBase {
     return new static(
       $container->get('kwtsms.otp_provider'),
       $container->get('tempstore.private'),
+      $container->get('entity_type.manager'),
     );
   }
 
@@ -118,7 +122,7 @@ class OtpVerifyForm extends FormBase {
       $store->delete('reset_uid');
       $store->delete('otp_phone');
       if ($resetUid) {
-        $user = User::load($resetUid);
+        $user = $this->entityTypeManager->getStorage('user')->load($resetUid);
         if ($user) {
           // Generate one-time login link and redirect.
           $url = user_pass_reset_url($user);
@@ -132,7 +136,7 @@ class OtpVerifyForm extends FormBase {
     }
 
     /** @var \Drupal\user\UserInterface|null $user */
-    $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
+    $user = $this->entityTypeManager->getStorage('user')->load($uid);
 
     if ($user === NULL || $user->isBlocked()) {
       $this->messenger()->addError($this->t('Invalid or expired code.'));

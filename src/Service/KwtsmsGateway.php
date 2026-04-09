@@ -7,6 +7,7 @@ namespace Drupal\kwtsms\Service;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\State\StateInterface;
+use Drupal\Component\Datetime\TimeInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
 use Psr\Log\LoggerInterface;
@@ -60,6 +61,10 @@ class KwtsmsGateway {
    *   The phone normalizer service.
    * @param \Drupal\kwtsms\Service\MessageCleaner $messageCleaner
    *   The message cleaner service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\kwtsms\Service\SmsLogger $smsLogger
+   *   The SMS logger service.
    */
   public function __construct(
     private readonly ClientInterface $httpClient,
@@ -69,11 +74,9 @@ class KwtsmsGateway {
     private readonly LoggerInterface $logger,
     private readonly PhoneNormalizer $phoneNormalizer,
     private readonly MessageCleaner $messageCleaner,
+    private readonly TimeInterface $time,
+    private readonly SmsLogger $smsLogger,
   ) {}
-
-  // ---------------------------------------------------------------------------
-  // Public API
-  // ---------------------------------------------------------------------------
 
   /**
    * Sends an SMS message to one or more recipients.
@@ -86,7 +89,8 @@ class KwtsmsGateway {
    *  5. Normalize and verify each recipient; skip and log invalid ones.
    *  6. Check coverage; skip and log numbers whose prefix is not covered.
    *  7. Deduplicate via array_unique.
-   *  8. Check cached balance; abort if <=0 (unless options['skip_balance_check']).
+   *  8. Check cached balance; abort if <=0
+   *     (unless options['skip_balance_check']).
    *  9. Chunk to bulkSend() when >200 recipients, else call apiSend() directly.
    * 10. Process results, log per-recipient via SmsLogger.
    *
@@ -103,19 +107,36 @@ class KwtsmsGateway {
    * @return array{success: bool, results: array, errors: array}
    *   Associative array with keys 'success', 'results', and 'errors'.
    */
-  public function send(array|string $recipients, string $message, string $eventType = 'manual', array $options = []): array {
+  public function send(
+    array|string $recipients,
+    string $message,
+    string $eventType = 'manual',
+    array $options = [],
+  ): array {
     $config = $this->configFactory->get('kwtsms.settings');
 
     // Step 1: global enabled guard.
     if (!$config->get('enabled')) {
-      $this->logger->warning('kwtSMS: send() aborted — module is disabled.');
-      return ['success' => FALSE, 'results' => [], 'errors' => ['Module is disabled.']];
+      $this->logger->warning(
+        'kwtSMS: send() aborted, module is disabled.'
+      );
+      return [
+        'success' => FALSE,
+        'results' => [],
+        'errors' => ['Module is disabled.'],
+      ];
     }
 
     // Step 2: connectivity guard.
     if (!$this->isConnected()) {
-      $this->logger->warning('kwtSMS: send() aborted — gateway not connected.');
-      return ['success' => FALSE, 'results' => [], 'errors' => ['Gateway not connected.']];
+      $this->logger->warning(
+        'kwtSMS: send() aborted, gateway not connected.'
+      );
+      return [
+        'success' => FALSE,
+        'results' => [],
+        'errors' => ['Gateway not connected.'],
+      ];
     }
 
     $testMode = (bool) $config->get('test_mode');
@@ -124,8 +145,14 @@ class KwtsmsGateway {
     // Step 4: clean message.
     $message = $this->messageCleaner->clean($message);
     if ($message === '') {
-      $this->logger->warning('kwtSMS: send() aborted — message is empty after cleaning.');
-      return ['success' => FALSE, 'results' => [], 'errors' => ['Message is empty after cleaning.']];
+      $this->logger->warning(
+        'kwtSMS: send() aborted, message is empty after cleaning.'
+      );
+      return [
+        'success' => FALSE,
+        'results' => [],
+        'errors' => ['Message is empty after cleaning.'],
+      ];
     }
 
     // Step 5 & 6: normalize, verify, and check coverage.
@@ -146,7 +173,10 @@ class KwtsmsGateway {
       }
 
       if ($coverage !== NULL && !$this->isCovered($normalized, $coverage)) {
-        $msg = sprintf('Skipping "%s": country prefix not in coverage.', $normalized);
+        $msg = sprintf(
+          'Skipping "%s": country prefix not in coverage.',
+          $normalized
+        );
         $this->logger->notice('kwtSMS: @msg', ['@msg' => $msg]);
         $errors[] = $msg;
         continue;
@@ -156,7 +186,14 @@ class KwtsmsGateway {
     }
 
     if (empty($validNumbers)) {
-      return ['success' => FALSE, 'results' => [], 'errors' => array_merge($errors, ['No valid recipients.'])];
+      return [
+        'success' => FALSE,
+        'results' => [],
+        'errors' => array_merge(
+          $errors,
+          ['No valid recipients.']
+        ),
+      ];
     }
 
     // Step 7: deduplicate.
@@ -166,14 +203,30 @@ class KwtsmsGateway {
     if (empty($options['skip_balance_check'])) {
       $balance = $this->getCachedBalance();
       if ($balance !== NULL && $balance <= 0) {
-        $this->logger->error('kwtSMS: send() aborted — balance is zero or negative.');
-        return ['success' => FALSE, 'results' => [], 'errors' => array_merge($errors, ['Insufficient balance.'])];
+        $this->logger->error(
+          'kwtSMS: send() aborted, balance is zero or negative.'
+        );
+        return [
+          'success' => FALSE,
+          'results' => [],
+          'errors' => array_merge(
+            $errors,
+            ['Insufficient balance.']
+          ),
+        ];
       }
     }
 
     // Step 9: send.
     if (count($validNumbers) > self::MAX_BATCH) {
-      $batchResult = $this->bulkSend($validNumbers, $message, $senderId, $testMode, $eventType, $options);
+      $batchResult = $this->bulkSend(
+        $validNumbers,
+        $message,
+        $senderId,
+        $testMode,
+        $eventType,
+        $options,
+      );
       return [
         'success' => $batchResult['success'],
         'results' => $batchResult['results'],
@@ -183,7 +236,15 @@ class KwtsmsGateway {
 
     $mobile    = implode(',', $validNumbers);
     $apiResult = $this->apiSend($mobile, $message, $senderId, $testMode);
-    $processed = $this->processApiResult($apiResult, $validNumbers, $message, $senderId, $testMode, $eventType, $options);
+    $processed = $this->processApiResult(
+      $apiResult,
+      $validNumbers,
+      $message,
+      $senderId,
+      $testMode,
+      $eventType,
+      $options,
+    );
 
     return [
       'success' => $processed['success'],
@@ -212,19 +273,31 @@ class KwtsmsGateway {
     $response = $this->apiCall('balance/', $payload);
 
     if ($response === NULL) {
-      return ['success' => FALSE, 'message' => 'API request failed. Check network connectivity.', 'balance' => NULL];
+      return [
+        'success' => FALSE,
+        'message' => 'API request failed. Check network connectivity.',
+        'balance' => NULL,
+      ];
     }
 
     if (($response['result'] ?? '') !== 'OK') {
       $code        = $response['code'] ?? 'UNKNOWN';
       $description = $response['description'] ?? 'Unknown error.';
-      return ['success' => FALSE, 'message' => sprintf('%s: %s', $code, $description), 'balance' => NULL];
+      return [
+        'success' => FALSE,
+        'message' => sprintf('%s: %s', $code, $description),
+        'balance' => NULL,
+      ];
     }
 
-    $balance = isset($response['available']) ? (int) $response['available'] : NULL;
+    $balance = isset($response['available'])
+      ? (int) $response['available']
+      : NULL;
 
     // Persist credentials.
-    $this->configFactory->getEditable('kwtsms.settings')->set('api_username', $username)->save();
+    $this->configFactory->getEditable('kwtsms.settings')
+      ->set('api_username', $username)
+      ->save();
     $this->state->set('kwtsms.api_password', $password);
     $this->state->set('kwtsms.gateway_connected', TRUE);
 
@@ -235,19 +308,36 @@ class KwtsmsGateway {
 
     // Fetch and cache sender IDs.
     $senderResponse = $this->apiCall('senderid/', $payload);
-    if ($senderResponse !== NULL && ($senderResponse['result'] ?? '') === 'OK') {
-      $this->setCachedValue('senderids', $senderResponse['senderid'] ?? []);
+    $senderOk = $senderResponse !== NULL
+      && ($senderResponse['result'] ?? '') === 'OK';
+    if ($senderOk) {
+      $this->setCachedValue(
+        'senderids',
+        $senderResponse['senderid'] ?? []
+      );
     }
 
     // Fetch and cache coverage (extract prefixes array only).
     $coverageResponse = $this->apiCall('coverage/', $payload);
-    if ($coverageResponse !== NULL && ($coverageResponse['result'] ?? '') === 'OK') {
-      $this->setCachedValue('coverage', $coverageResponse['prefixes'] ?? []);
+    $coverageOk = $coverageResponse !== NULL
+      && ($coverageResponse['result'] ?? '') === 'OK';
+    if ($coverageOk) {
+      $this->setCachedValue(
+        'coverage',
+        $coverageResponse['prefixes'] ?? []
+      );
     }
 
-    $this->logger->info('kwtSMS: gateway connected as @user.', ['@user' => $username]);
+    $this->logger->info(
+      'kwtSMS: gateway connected as @user.',
+      ['@user' => $username]
+    );
 
-    return ['success' => TRUE, 'message' => 'Connected successfully.', 'balance' => $balance];
+    return [
+      'success' => TRUE,
+      'message' => 'Connected successfully.',
+      'balance' => $balance,
+    ];
   }
 
   /**
@@ -298,24 +388,41 @@ class KwtsmsGateway {
     $balance     = NULL;
 
     $balanceResponse = $this->apiCall('balance/', $credentials);
-    if ($balanceResponse !== NULL && ($balanceResponse['result'] ?? '') === 'OK') {
-      $balance = isset($balanceResponse['available']) ? (int) $balanceResponse['available'] : NULL;
+    $balanceOk = $balanceResponse !== NULL
+      && ($balanceResponse['result'] ?? '') === 'OK';
+    if ($balanceOk) {
+      $balance = isset($balanceResponse['available'])
+        ? (int) $balanceResponse['available']
+        : NULL;
       if ($balance !== NULL) {
         $this->setCachedValue('balance', $balance);
       }
     }
 
     $senderResponse = $this->apiCall('senderid/', $credentials);
-    if ($senderResponse !== NULL && ($senderResponse['result'] ?? '') === 'OK') {
-      $this->setCachedValue('senderids', $senderResponse['senderid'] ?? []);
+    $senderOk = $senderResponse !== NULL
+      && ($senderResponse['result'] ?? '') === 'OK';
+    if ($senderOk) {
+      $this->setCachedValue(
+        'senderids',
+        $senderResponse['senderid'] ?? []
+      );
     }
 
     $coverageResponse = $this->apiCall('coverage/', $credentials);
-    if ($coverageResponse !== NULL && ($coverageResponse['result'] ?? '') === 'OK') {
-      $this->setCachedValue('coverage', $coverageResponse['prefixes'] ?? []);
+    $coverageOk = $coverageResponse !== NULL
+      && ($coverageResponse['result'] ?? '') === 'OK';
+    if ($coverageOk) {
+      $this->setCachedValue(
+        'coverage',
+        $coverageResponse['prefixes'] ?? []
+      );
     }
 
-    $this->logger->info('kwtSMS: sync completed. Balance: @balance.', ['@balance' => $balance ?? 'unknown']);
+    $this->logger->info(
+      'kwtSMS: sync completed. Balance: @balance.',
+      ['@balance' => $balance ?? 'unknown']
+    );
 
     return ['success' => TRUE, 'balance' => $balance];
   }
@@ -353,7 +460,7 @@ class KwtsmsGateway {
    */
   public function setCachedValue(string $key, mixed $value): void {
     $encoded = json_encode($value);
-    $now     = \Drupal::time()->getRequestTime();
+    $now     = $this->time->getRequestTime();
 
     $this->database->merge('kwtsms_cache')
       ->key('cache_key', $key)
@@ -410,7 +517,10 @@ class KwtsmsGateway {
       return [
         'success'      => FALSE,
         'api_response' => [],
-        'message'      => sprintf('Invalid phone number: %s', $verification['reason']),
+        'message'      => sprintf(
+          'Invalid phone number: %s',
+          $verification['reason']
+        ),
       ];
     }
 
@@ -439,14 +549,17 @@ class KwtsmsGateway {
       'success'      => $ok,
       'api_response' => $apiResult,
       'message'      => $ok
-        ? sprintf('Test SMS queued (test mode). Msg-ID: %s', $apiResult['msg-id'] ?? 'N/A')
-        : sprintf('%s: %s', $apiResult['code'] ?? 'ERROR', $apiResult['description'] ?? 'Unknown error.'),
+        ? sprintf(
+          'Test SMS queued (test mode). Msg-ID: %s',
+          $apiResult['msg-id'] ?? 'N/A'
+        )
+        : sprintf(
+          '%s: %s',
+          $apiResult['code'] ?? 'ERROR',
+          $apiResult['description'] ?? 'Unknown error.'
+        ),
     ];
   }
-
-  // ---------------------------------------------------------------------------
-  // Private helpers
-  // ---------------------------------------------------------------------------
 
   /**
    * Sends to more than MAX_BATCH recipients by chunking into batches.
@@ -470,7 +583,14 @@ class KwtsmsGateway {
    * @return array{success: bool, results: array, errors: array}
    *   Aggregated result across all batches.
    */
-  private function bulkSend(array $numbers, string $message, string $senderId, bool $testMode, string $eventType, array $options): array {
+  private function bulkSend(
+    array $numbers,
+    string $message,
+    string $senderId,
+    bool $testMode,
+    string $eventType,
+    array $options,
+  ): array {
     $chunks  = array_chunk($numbers, self::MAX_BATCH);
     $results = [];
     $errors  = [];
@@ -486,10 +606,23 @@ class KwtsmsGateway {
 
       // Handle ERR013 (queue full) with exponential backoff.
       if ($apiResult !== NULL && ($apiResult['code'] ?? '') === 'ERR013') {
-        $apiResult = $this->retryWithBackoff($batch, $message, $senderId, $testMode);
+        $apiResult = $this->retryWithBackoff(
+          $batch,
+          $message,
+          $senderId,
+          $testMode,
+        );
       }
 
-      $processed = $this->processApiResult($apiResult, $batch, $message, $senderId, $testMode, $eventType, $options);
+      $processed = $this->processApiResult(
+        $apiResult,
+        $batch,
+        $message,
+        $senderId,
+        $testMode,
+        $eventType,
+        $options,
+      );
 
       if (!$processed['success']) {
         $allOk = FALSE;
@@ -521,7 +654,12 @@ class KwtsmsGateway {
    *   The last API response array, or NULL if all attempts failed at the
    *   network level.
    */
-  private function retryWithBackoff(array $batch, string $message, string $senderId, bool $testMode): ?array {
+  private function retryWithBackoff(
+    array $batch,
+    string $message,
+    string $senderId,
+    bool $testMode,
+  ): ?array {
     $mobile = implode(',', $batch);
 
     foreach (self::ERR013_BACKOFF as $delaySec) {
@@ -542,7 +680,10 @@ class KwtsmsGateway {
       }
     }
 
-    $this->logger->error('kwtSMS: ERR013 backoff exhausted for batch of @count numbers.', ['@count' => count($batch)]);
+    $this->logger->error(
+      'kwtSMS: ERR013 backoff exhausted for batch of @count numbers.',
+      ['@count' => count($batch)]
+    );
 
     // Return the last result (which is still ERR013) so the caller can log it.
     return $this->apiSend($mobile, $message, $senderId, $testMode);
@@ -612,7 +753,12 @@ class KwtsmsGateway {
    * @return array|null
    *   The raw API response array, or NULL on failure.
    */
-  private function apiSend(string $mobile, string $message, string $senderId, bool $testMode): ?array {
+  private function apiSend(
+    string $mobile,
+    string $message,
+    string $senderId,
+    bool $testMode,
+  ): ?array {
     $credentials = $this->getCredentials();
 
     $payload = [
@@ -634,9 +780,6 @@ class KwtsmsGateway {
    * row per recipient via SmsLogger. On failure, logs an error row per
    * recipient.
    *
-   * SmsLogger is retrieved via \Drupal::service() to avoid a circular
-   * dependency (kwtsms.logger -> kwtsms.gateway would form a cycle).
-   *
    * @param array|null $apiResult
    *   The raw API response, or NULL if the request failed entirely.
    * @param string[] $numbers
@@ -655,14 +798,19 @@ class KwtsmsGateway {
    * @return array{success: bool, results: array, errors: array}
    *   Processed result with per-batch aggregates.
    */
-  private function processApiResult(?array $apiResult, array $numbers, string $message, string $senderId, bool $testMode, string $eventType, array $options): array {
-    /** @var \Drupal\kwtsms\Service\SmsLogger $smsLogger */
-    $smsLogger = \Drupal::service('kwtsms.logger');
-
+  private function processApiResult(
+    ?array $apiResult,
+    array $numbers,
+    string $message,
+    string $senderId,
+    bool $testMode,
+    string $eventType,
+    array $options,
+  ): array {
     if ($apiResult === NULL) {
       $errorMsg = 'API request failed (network or decode error).';
       foreach ($numbers as $number) {
-        $smsLogger->logSend([
+        $this->smsLogger->logSend([
           'recipient'         => $number,
           'message'           => $message,
           'sender_id'         => $senderId,
@@ -685,12 +833,16 @@ class KwtsmsGateway {
       }
 
       $msgId           = $apiResult['msg-id'] ?? NULL;
-      $pointsCharged   = isset($apiResult['points-charged']) ? (int) $apiResult['points-charged'] : 0;
-      $balanceAfter    = isset($apiResult['balance-after']) ? (int) $apiResult['balance-after'] : 0;
+      $pointsCharged   = isset($apiResult['points-charged'])
+        ? (int) $apiResult['points-charged']
+        : 0;
+      $balanceAfter    = isset($apiResult['balance-after'])
+        ? (int) $apiResult['balance-after']
+        : 0;
       $apiResponseJson = json_encode($apiResult);
 
       foreach ($numbers as $number) {
-        $smsLogger->logSend([
+        $this->smsLogger->logSend([
           'recipient'      => $number,
           'message'        => $message,
           'sender_id'      => $senderId,
@@ -724,7 +876,7 @@ class KwtsmsGateway {
     $apiResponseJson = json_encode($apiResult);
 
     foreach ($numbers as $number) {
-      $smsLogger->logSend([
+      $this->smsLogger->logSend([
         'recipient'         => $number,
         'message'           => $message,
         'sender_id'         => $senderId,
@@ -754,7 +906,9 @@ class KwtsmsGateway {
     $config = $this->configFactory->get('kwtsms.settings');
     return [
       'username' => (string) ($config->get('api_username') ?? ''),
-      'password' => (string) ($this->state->get('kwtsms.api_password', '') ?? ''),
+      'password' => (string) (
+        $this->state->get('kwtsms.api_password', '') ?? ''
+      ),
     ];
   }
 
@@ -797,7 +951,8 @@ class KwtsmsGateway {
    *   data is not in an expected format.
    */
   private function isCovered(string $number, array $coverage): bool {
-    // Coverage is stored as a flat array of prefix strings: ['965', '966', ...].
+    // Coverage is stored as a flat array of prefix strings:
+    // ['965', '966', ...].
     if (empty($coverage)) {
       return TRUE;
     }

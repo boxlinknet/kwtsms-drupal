@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Displays all kwtsms_template entities grouped by category with actions.
@@ -20,9 +21,12 @@ class TemplateListForm extends FormBase {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
    */
   public function __construct(
     private readonly EntityTypeManagerInterface $entityTypeManager,
+    private readonly RendererInterface $renderer,
   ) {}
 
   /**
@@ -31,6 +35,7 @@ class TemplateListForm extends FormBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('entity_type.manager'),
+      $container->get('renderer'),
     );
   }
 
@@ -87,7 +92,7 @@ class TemplateListForm extends FormBase {
     $rows = [];
     $resetButtons = [];
 
-    foreach ($grouped as $category => $categoryTemplates) {
+    foreach ($grouped as $categoryTemplates) {
       foreach ($categoryTemplates as $template) {
         $id = $template->id();
 
@@ -98,7 +103,7 @@ class TemplateListForm extends FormBase {
           '#attributes' => ['class' => ['button', 'button--small']],
         ];
 
-        $actionMarkup = \Drupal::service('renderer')->render($actions);
+        $actionMarkup = $this->renderer->render($actions);
 
         if ($template->isSystem()) {
           $resetKey = 'reset_' . $id;
@@ -109,7 +114,7 @@ class TemplateListForm extends FormBase {
             '#submit' => ['::submitForm'],
             '#attributes' => ['data-template-id' => $id, 'class' => ['button', 'button--small', 'button--danger']],
           ];
-          $resetMarkup = \Drupal::service('renderer')->render($resetButtons[$resetKey]);
+          $resetMarkup = $this->renderer->render($resetButtons[$resetKey]);
           $actionMarkup .= ' ' . $resetMarkup;
         }
 

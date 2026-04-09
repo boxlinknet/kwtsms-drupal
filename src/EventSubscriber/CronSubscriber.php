@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\EventSubscriber;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;
 use Drupal\kwtsms\Service\SmsLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -16,11 +18,24 @@ class CronSubscriber implements EventSubscriberInterface {
 
   /**
    * Constructs a CronSubscriber instance.
+   *
+   * @param \Drupal\kwtsms\Service\KwtsmsGateway $gateway
+   *   The kwtSMS gateway service.
+   * @param \Drupal\kwtsms\Service\SmsLogger $smsLogger
+   *   The SMS logger service.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
+   *   The config factory service.
    */
   public function __construct(
     private readonly KwtsmsGateway $gateway,
     private readonly SmsLogger $smsLogger,
     private readonly Connection $database,
+    private readonly TimeInterface $time,
+    private readonly ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -39,7 +54,7 @@ class CronSubscriber implements EventSubscriberInterface {
   public function onCron(): void {
     // Daily sync: only if last sync > 23 hours ago.
     $lastSync = $this->gateway->getCacheTimestamp('balance');
-    $now = \Drupal::time()->getRequestTime();
+    $now = $this->time->getRequestTime();
 
     if ($lastSync === NULL || ($now - $lastSync) > 82800) {
       $result = $this->gateway->sync();
@@ -58,7 +73,7 @@ class CronSubscriber implements EventSubscriberInterface {
     }
 
     // Clean old SMS logs based on retention policy.
-    $retentionDays = (int) \Drupal::config('kwtsms.settings')->get('log_retention_days');
+    $retentionDays = (int) $this->configFactory->get('kwtsms.settings')->get('log_retention_days');
     if ($retentionDays > 0) {
       $cutoffLogs = $now - ($retentionDays * 86400);
       $deletedLogs = $this->database->delete('kwtsms_sms_log')

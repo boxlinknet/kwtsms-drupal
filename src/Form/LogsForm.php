@@ -134,7 +134,7 @@ class LogsForm extends FormBase {
       $activeFilters['date_to'] = strtotime($filters['date_to'] . ' 23:59:59');
     }
 
-    $page = (int) \Drupal::request()->query->get('page', 0);
+    $page = (int) $this->getRequest()->query->get('page', 0);
     $offset = $page * self::LOGS_PER_PAGE;
 
     // Fetch one extra row to detect if there are more pages.

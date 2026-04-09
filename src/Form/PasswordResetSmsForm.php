@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\kwtsms\Event\OtpRequestEvent;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -11,8 +13,10 @@ use Drupal\Core\Url;
 use Drupal\kwtsms\Authentication\OtpAuthProvider;
 use Drupal\kwtsms\Service\KwtsmsGateway;
 use Drupal\kwtsms\Service\PhoneNormalizer;
+use Drupal\kwtsms\Service\SmsLogger;
 use Drupal\kwtsms\Service\TemplateRenderer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Password reset form that delivers a one-time code via SMS.
@@ -36,6 +40,12 @@ class PasswordResetSmsForm extends FormBase {
    *   The phone normalizer service.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
    *   The private tempstore factory.
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+   *   The event dispatcher service.
+   * @param \Drupal\kwtsms\Service\SmsLogger $smsLogger
+   *   The kwtSMS SMS logger service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager service.
    */
   public function __construct(
     private readonly OtpAuthProvider $otpProvider,
@@ -43,6 +53,9 @@ class PasswordResetSmsForm extends FormBase {
     private readonly TemplateRenderer $templateRenderer,
     private readonly PhoneNormalizer $phoneNormalizer,
     private readonly PrivateTempStoreFactory $tempStoreFactory,
+    private readonly EventDispatcherInterface $eventDispatcher,
+    private readonly SmsLogger $smsLogger,
+    private readonly EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
   /**
@@ -55,6 +68,9 @@ class PasswordResetSmsForm extends FormBase {
       $container->get('kwtsms.template_renderer'),
       $container->get('kwtsms.phone_normalizer'),
       $container->get('tempstore.private'),
+      $container->get('event_dispatcher'),
+      $container->get('kwtsms.logger'),
+      $container->get('entity_type.manager'),
     );
   }
 
@@ -136,11 +152,11 @@ class PasswordResetSmsForm extends FormBase {
     }
 
     // Dispatch OTP request event (CAPTCHA integration point).
-    $event = new \Drupal\kwtsms\Event\OtpRequestEvent($phone, 'password_reset', \Drupal::request()->getClientIp() ?? '');
-    \Drupal::service('event_dispatcher')->dispatch($event, \Drupal\kwtsms\Event\OtpRequestEvent::EVENT_NAME);
+    $event = new OtpRequestEvent($phone, 'password_reset', $this->getRequest()->getClientIp() ?? '');
+    $this->eventDispatcher->dispatch($event, OtpRequestEvent::EVENT_NAME);
     if ($event->isBlocked()) {
       // Silently log, don't reveal to user (anti-enumeration).
-      \Drupal::service('kwtsms.logger')->info('OTP request blocked: @reason', ['@reason' => $event->getBlockReason()]);
+      $this->smsLogger->info('OTP request blocked: @reason', ['@reason' => $event->getBlockReason()]);
       // Still show the same neutral message.
     }
 
@@ -150,7 +166,7 @@ class PasswordResetSmsForm extends FormBase {
 
     if ($uid !== NULL) {
       /** @var \Drupal\user\UserInterface|null $user */
-      $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
+      $user = $this->entityTypeManager->getStorage('user')->load($uid);
 
       if ($user !== NULL) {
         $message = $this->templateRenderer->render(

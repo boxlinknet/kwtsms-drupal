@@ -6,6 +6,7 @@ namespace Drupal\kwtsms\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
+use Drupal\Component\Datetime\TimeInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -26,11 +27,14 @@ class SmsLogger {
    *   The config factory service.
    * @param \Psr\Log\LoggerInterface $logger
    *   The kwtsms logger channel.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
    */
   public function __construct(
     private readonly Connection $database,
     private readonly ConfigFactoryInterface $configFactory,
     private readonly LoggerInterface $logger,
+    private readonly TimeInterface $time,
   ) {}
 
   /**
@@ -56,7 +60,7 @@ class SmsLogger {
       'test_mode'         => 0,
       'event_type'        => 'manual',
       'uid'               => 0,
-      'created'           => \Drupal::time()->getRequestTime(),
+      'created'           => $this->time->getRequestTime(),
     ];
 
     $row = array_merge($defaults, $data);
@@ -167,7 +171,7 @@ class SmsLogger {
    *   Associative array with keys 'today', 'week', and 'month'.
    */
   public function getStats(): array {
-    $now = \Drupal::time()->getRequestTime();
+    $now = $this->time->getRequestTime();
 
     // Start of today (midnight in server time).
     $todayStart = (int) strtotime('today midnight', $now);
@@ -193,7 +197,7 @@ class SmsLogger {
    *   Ordered by date ascending.
    */
   public function getDailyStats(int $days = 30): array {
-    $cutoff = \Drupal::time()->getRequestTime() - ($days * 86400);
+    $cutoff = $this->time->getRequestTime() - ($days * 86400);
 
     $rows = $this->database->select('kwtsms_sms_log', 'l')
       ->fields('l', ['created'])

@@ -47,7 +47,8 @@ class TemplateRenderer {
    * @param string $templateId
    *   The kwtsms_template config entity ID.
    * @param array $data
-   *   Token data array passed to Drupal's token service (e.g. ['user' => $account]).
+   *   Token data array passed to Drupal's token service
+   *   (e.g. ['user' => $account]).
    * @param array $extraTokens
    *   Simple search-replace pairs applied before Drupal tokens, keyed by the
    *   full token string (e.g. ['[kwtsms:otp-code]' => '123456']).
@@ -58,7 +59,12 @@ class TemplateRenderer {
    * @return string|null
    *   The fully rendered message, or NULL if the template does not exist.
    */
-  public function render(string $templateId, array $data = [], array $extraTokens = [], ?string $langcode = NULL): ?string {
+  public function render(
+    string $templateId,
+    array $data = [],
+    array $extraTokens = [],
+    ?string $langcode = NULL,
+  ): ?string {
     $storage = $this->entityTypeManager->getStorage('kwtsms_template');
     $template = $storage->load($templateId);
 
@@ -71,7 +77,11 @@ class TemplateRenderer {
     $body = $template->getBody($langcode);
 
     if (!empty($extraTokens)) {
-      $body = str_replace(array_keys($extraTokens), array_values($extraTokens), $body);
+      $body = str_replace(
+        array_keys($extraTokens),
+        array_values($extraTokens),
+        $body
+      );
     }
 
     $tokenOptions = [
@@ -94,13 +104,16 @@ class TemplateRenderer {
    *   A language code: 'en', 'ar', or the site default langcode.
    */
   private function resolveLanguage(array $data): string {
-    $smsLanguage = $this->configFactory->get('kwtsms.settings')->get('sms_language') ?? 'auto';
+    $config = $this->configFactory->get('kwtsms.settings');
+    $smsLanguage = $config->get('sms_language') ?? 'auto';
 
     if ($smsLanguage === 'en' || $smsLanguage === 'ar') {
       return $smsLanguage;
     }
 
-    if (isset($data['user']) && method_exists($data['user'], 'getPreferredLangcode')) {
+    $hasLangMethod = isset($data['user'])
+      && method_exists($data['user'], 'getPreferredLangcode');
+    if ($hasLangMethod) {
       $preferred = $data['user']->getPreferredLangcode();
       if ($preferred !== '') {
         return $preferred;

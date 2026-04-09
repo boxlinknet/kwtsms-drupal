@@ -280,6 +280,22 @@ function kwtsms_install(): void {
 }
 
 /**
+ * Widen error_code column from varchar(10) to varchar(32).
+ */
+function kwtsms_update_10300(): void {
+  $schema = \Drupal::database()->schema();
+  if ($schema->fieldExists('kwtsms_sms_log', 'error_code')) {
+    $schema->changeField('kwtsms_sms_log', 'error_code', 'error_code', [
+      'type' => 'varchar',
+      'length' => 32,
+      'not null' => FALSE,
+      'default' => NULL,
+      'description' => 'kwtSMS error code if failed.',
+    ]);
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function kwtsms_uninstall(): void {

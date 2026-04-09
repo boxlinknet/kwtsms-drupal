@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;
 use Drupal\kwtsms\Service\PhoneNormalizer;
 use Drupal\kwtsms\Service\SmsLogger;
+use Drupal\Component\Datetime\TimeInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -42,6 +43,8 @@ class OtpAuthProvider {
    *   The entity type manager.
    * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
    *   The request stack.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
    */
   public function __construct(
     private readonly Connection $database,
@@ -51,6 +54,7 @@ class OtpAuthProvider {
     private readonly ConfigFactoryInterface $configFactory,
     private readonly EntityTypeManagerInterface $entityTypeManager,
     private readonly RequestStack $requestStack,
+    private readonly TimeInterface $time,
   ) {}
 
   /**
@@ -71,7 +75,7 @@ class OtpAuthProvider {
    *   The plain 6-digit code. Store or send this; never persisted in the DB.
    */
   public function generateOtp(string $phone, string $purpose, int $uid = 0): string {
-    $now = \Drupal::time()->getRequestTime();
+    $now = $this->time->getRequestTime();
 
     // Invalidate all previous unused OTPs for this phone and purpose.
     $this->database->update('kwtsms_otp')
@@ -127,7 +131,7 @@ class OtpAuthProvider {
    *   Result array with keys 'valid', 'reason', and 'uid'.
    */
   public function verifyOtp(string $phone, string $code, string $purpose): array {
-    $now = \Drupal::time()->getRequestTime();
+    $now = $this->time->getRequestTime();
 
     $row = $this->database->select('kwtsms_otp', 'o')
       ->fields('o')
@@ -188,7 +192,7 @@ class OtpAuthProvider {
     $config        = $this->configFactory->get('kwtsms.settings');
     $perPhoneLimit = (int) ($config->get('otp_per_phone_hour') ?? 5);
     $perIpLimit    = (int) ($config->get('otp_per_ip_hour') ?? 10);
-    $since         = \Drupal::time()->getRequestTime() - 3600;
+    $since         = $this->time->getRequestTime() - 3600;
 
     $phoneCount = (int) $this->database->select('kwtsms_otp', 'o')
       ->condition('o.phone', $phone)
@@ -233,7 +237,7 @@ class OtpAuthProvider {
     $config          = $this->configFactory->get('kwtsms.settings');
     $lockoutAttempts = (int) ($config->get('otp_lockout_attempts') ?? 5);
     $lockoutMinutes  = (int) ($config->get('otp_lockout_minutes') ?? 15);
-    $since           = \Drupal::time()->getRequestTime() - ($lockoutMinutes * 60);
+    $since           = $this->time->getRequestTime() - ($lockoutMinutes * 60);
 
     $count = (int) $this->database->select('kwtsms_otp', 'o')
       ->condition('o.phone', $phone)
@@ -257,7 +261,7 @@ class OtpAuthProvider {
    */
   public function checkResendCooldown(string $phone): bool {
     $cooldown = (int) ($this->configFactory->get('kwtsms.settings')->get('otp_resend_cooldown') ?? 60);
-    $since    = \Drupal::time()->getRequestTime() - $cooldown;
+    $since    = $this->time->getRequestTime() - $cooldown;
 
     $count = (int) $this->database->select('kwtsms_otp', 'o')
       ->condition('o.phone', $phone)

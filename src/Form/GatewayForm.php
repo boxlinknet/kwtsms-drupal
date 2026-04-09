@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;
@@ -22,9 +23,12 @@ class GatewayForm extends FormBase {
    *
    * @param \Drupal\kwtsms\Service\KwtsmsGateway $gateway
    *   The kwtSMS gateway service.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $dateFormatter
+   *   The date formatter service.
    */
   public function __construct(
     private readonly KwtsmsGateway $gateway,
+    private readonly DateFormatterInterface $dateFormatter,
   ) {}
 
   /**
@@ -33,6 +37,7 @@ class GatewayForm extends FormBase {
   public static function create(ContainerInterface $container): static {
     return new static(
       $container->get('kwtsms.gateway'),
+      $container->get('date.formatter'),
     );
   }
 
@@ -77,7 +82,7 @@ class GatewayForm extends FormBase {
       ];
     }
     else {
-      $config   = \Drupal::config('kwtsms.settings');
+      $config   = $this->configFactory()->get('kwtsms.settings');
       $username = (string) ($config->get('api_username') ?? '');
 
       $form['credentials']['status'] = [
@@ -99,7 +104,7 @@ class GatewayForm extends FormBase {
       $syncTs    = $this->gateway->getCacheTimestamp('balance');
 
       $lastSync = $syncTs
-        ? \Drupal::service('date.formatter')->format($syncTs, 'medium')
+        ? $this->dateFormatter->format($syncTs, 'medium')
         : $this->t('Never');
 
       // Format sender IDs.

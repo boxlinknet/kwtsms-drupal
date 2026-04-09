@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
@@ -36,6 +37,8 @@ class TwoFactorVerifyForm extends FormBase {
    *   The template renderer service.
    * @param \Drupal\kwtsms\Service\PhoneNormalizer $phoneNormalizer
    *   The phone normalizer service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   The entity type manager.
    */
   public function __construct(
     private readonly OtpAuthProvider $otpProvider,
@@ -43,6 +46,7 @@ class TwoFactorVerifyForm extends FormBase {
     private readonly KwtsmsGateway $gateway,
     private readonly TemplateRenderer $templateRenderer,
     private readonly PhoneNormalizer $phoneNormalizer,
+    private readonly EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
   /**
@@ -55,6 +59,7 @@ class TwoFactorVerifyForm extends FormBase {
       $container->get('kwtsms.gateway'),
       $container->get('kwtsms.template_renderer'),
       $container->get('kwtsms.phone_normalizer'),
+      $container->get('entity_type.manager'),
     );
   }
 
@@ -113,7 +118,7 @@ class TwoFactorVerifyForm extends FormBase {
     }
 
     /** @var \Drupal\user\UserInterface|null $user */
-    $user = \Drupal::entityTypeManager()->getStorage('user')->load($uid);
+    $user = $this->entityTypeManager->getStorage('user')->load($uid);
 
     if ($user === NULL || $user->isBlocked()) {
       $this->messenger()->addError($this->t('Invalid or expired code.'));

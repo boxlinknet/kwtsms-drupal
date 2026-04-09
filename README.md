@@ -28,6 +28,9 @@ SMS gateway integration with [kwtSMS.com](https://www.kwtsms.com) for Drupal 10.
 - User registration SMS to customers and admins
 - Admin alerts for new user registrations
 - Commerce order notifications: order placed, status updates, payment confirmations (via submodule)
+- Commerce low stock alerts to admins when product stock drops below threshold
+- Commerce shipping status update notifications to customers
+- Commerce abandoned cart SMS reminders via cron
 
 **Admin UI (7 Tabs)**
 - **Dashboard**: read-only status overview, SMS stats, 30-day volume chart
@@ -43,6 +46,9 @@ SMS gateway integration with [kwtSMS.com](https://www.kwtsms.com) for Drupal 10.
 - Phone normalization: Arabic/Hindi digit conversion, leading zero handling, country code prepend
 - Message cleaning: strip emoji, hidden Unicode chars, HTML tags
 - Drupal Token system integration with custom tokens: `[kwtsms:otp-code]`, `[kwtsms:sender-id]`, `[kwtsms:balance]`
+- Events for module integration: `kwtsms.otp_request` (CAPTCHA/validation) and `kwtsms.sms_send` (pre-send hooks)
+- SMS Framework v2 gateway plugin via bridge submodule
+- Log retention policy: auto-delete logs older than configurable days
 - Daily cron sync for balance, sender IDs, and coverage
 - Automatic expired OTP cleanup
 
@@ -54,6 +60,7 @@ SMS gateway integration with [kwtSMS.com](https://www.kwtsms.com) for Drupal 10.
 
 **Optional:**
 - [Drupal Commerce](https://www.drupal.org/project/commerce): enable the `kwtsms_commerce` submodule for order notifications
+- [SMS Framework](https://www.drupal.org/project/smsframework): enable the `kwtsms_smsframework` bridge submodule to use kwtSMS as an SMS Framework gateway
 - [Token](https://www.drupal.org/project/token): adds a token browser UI for template editing
 
 ## Installation
@@ -92,12 +99,16 @@ kwtsms/                          Base module (standalone)
   translations/kwtsms.ar.po     Arabic translations
   modules/kwtsms_commerce/       Commerce submodule
     src/EventSubscriber/         Order transition event subscriber
-    config/install/              4 Commerce templates
+    config/install/              4 Commerce templates + 3 new (low stock, shipping, abandoned cart)
+  modules/kwtsms_smsframework/   SMS Framework bridge submodule
+    src/Plugin/SmsGateway/       SMS Framework gateway plugin
 ```
 
 ## Submodules
 
-**kwtsms_commerce** integrates with Drupal Commerce to send SMS on order events. Listens to order state transitions (placed, fulfilled, canceled). Requires the Commerce module. Enable separately after the base module.
+**kwtsms_commerce** integrates with Drupal Commerce to send SMS on order events. Listens to order state transitions (placed, fulfilled, canceled), sends low stock alerts, shipping status updates, and abandoned cart reminders. Requires the Commerce module. Enable separately after the base module.
+
+**kwtsms_smsframework** registers kwtSMS as an SMS Framework gateway plugin, allowing other modules that use SMS Framework to send messages through kwtSMS. Requires the [SMS Framework](https://www.drupal.org/project/smsframework) module.
 
 ## Multilingual Support
 
@@ -120,15 +131,7 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 ## Roadmap
 
-**v1.1 (next)**
-- Commerce abandoned cart SMS reminders
-- Low stock alerts (admin notification)
-- Shipping status update notifications
-- SMS Framework v4 gateway plugin (bridge submodule)
-- CAPTCHA integration point for OTP forms
-- Log retention policy (auto-delete after configurable days)
-
-**v1.2**
+**v1.2 (next)**
 - Bulk SMS send from admin UI
 - Scheduled/marketing SMS campaigns
 - Webform integration submodule
@@ -137,7 +140,6 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 **v1.3**
 - SMS delivery analytics dashboard (success rates, trends)
 - Audit log with export for compliance
-- Multi-gateway failover support
 
 ## Support
 

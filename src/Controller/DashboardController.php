@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Controller;
 
+use Drupal\Core\Access\CsrfTokenGenerator;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\kwtsms\Service\KwtsmsGateway;
@@ -25,10 +26,13 @@ class DashboardController extends ControllerBase {
    *   The kwtSMS gateway service.
    * @param \Drupal\kwtsms\Service\SmsLogger $smsLogger
    *   The kwtSMS SMS logger service.
+   * @param \Drupal\Core\Access\CsrfTokenGenerator $csrfToken
+   *   The CSRF token generator service.
    */
   public function __construct(
     private readonly KwtsmsGateway $gateway,
     private readonly SmsLogger $smsLogger,
+    private readonly CsrfTokenGenerator $csrfToken,
   ) {}
 
   /**
@@ -38,6 +42,7 @@ class DashboardController extends ControllerBase {
     return new static(
       $container->get('kwtsms.gateway'),
       $container->get('kwtsms.logger'),
+      $container->get('csrf_token'),
     );
   }
 
@@ -63,7 +68,7 @@ class DashboardController extends ControllerBase {
     $dailyStats = $this->smsLogger->getDailyStats();
 
     $syncUrl = Url::fromRoute('kwtsms.gateway_sync', [], [
-      'query' => ['token' => \Drupal::service('csrf_token')->get('kwtsms.gateway_sync')],
+      'query' => ['token' => $this->csrfToken->get('kwtsms.gateway_sync')],
     ]);
 
     return [

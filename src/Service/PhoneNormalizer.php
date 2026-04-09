@@ -66,7 +66,8 @@ class PhoneNormalizer {
    *  2. Strip all non-digit characters (spaces, dashes, plus, parentheses).
    *  3. Remove leading double-zero trunk prefix (00...).
    *  4. Remove a single leading zero for local numbers with <=10 digits.
-   *  5. Prepend the default country code when the remaining digit count is <=10.
+   *  5. Prepend the default country code when the remaining
+   *     digit count is <=10.
    *
    * @param string $phone
    *   The raw phone number string.
@@ -122,7 +123,10 @@ class PhoneNormalizer {
     }
 
     if (!ctype_digit($phone)) {
-      return ['valid' => FALSE, 'reason' => 'Phone number contains non-digit characters.'];
+      return [
+        'valid' => FALSE,
+        'reason' => 'Phone number contains non-digit characters.',
+      ];
     }
 
     $length = strlen($phone);
@@ -130,7 +134,10 @@ class PhoneNormalizer {
     if ($length < 8 || $length > 15) {
       return [
         'valid'  => FALSE,
-        'reason' => sprintf('Phone number length %d is outside the valid E.164 range (8-15).', $length),
+        'reason' => sprintf(
+          'Phone number length %d is outside the valid E.164 range (8-15).',
+          $length
+        ),
       ];
     }
 
@@ -168,7 +175,9 @@ class PhoneNormalizer {
   public function detectCountryCode(string $phone): ?string {
     // Sort by prefix length descending to prefer the longest match.
     $prefixes = array_map('strval', array_keys(self::COUNTRY_LENGTHS));
-    usort($prefixes, static fn(string $a, string $b): int => strlen($b) - strlen($a));
+    usort($prefixes, static fn(string $a, string $b): int =>
+      strlen($b) - strlen($a)
+    );
 
     foreach ($prefixes as $prefix) {
       if (str_starts_with($phone, $prefix)) {

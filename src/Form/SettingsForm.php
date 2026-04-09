@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\kwtsms\Form;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\kwtsms\Service\KwtsmsGateway;
@@ -23,6 +24,11 @@ class SettingsForm extends ConfigFormBase {
   private readonly KwtsmsGateway $gateway;
 
   /**
+   * The entity type manager.
+   */
+  private readonly EntityTypeManagerInterface $entityTypeManager;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container): static {
@@ -31,6 +37,7 @@ class SettingsForm extends ConfigFormBase {
       $container->get('config.typed'),
     );
     $instance->gateway = $container->get('kwtsms.gateway');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
     return $instance;
   }
 
@@ -146,7 +153,7 @@ class SettingsForm extends ConfigFormBase {
     ];
 
     // Build role checkboxes, excluding the anonymous role.
-    $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
+    $roles = $this->entityTypeManager->getStorage('user_role')->loadMultiple();
     $roleOptions = [];
     foreach ($roles as $roleId => $role) {
       if ($roleId === 'anonymous') {
@@ -327,10 +334,6 @@ class SettingsForm extends ConfigFormBase {
 
     parent::submitForm($form, $form_state);
   }
-
-  // ---------------------------------------------------------------------------
-  // Private helpers
-  // ---------------------------------------------------------------------------
 
   /**
    * Builds country code select options from cached coverage data.

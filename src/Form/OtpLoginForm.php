@@ -9,10 +9,13 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Url;
 use Drupal\kwtsms\Authentication\OtpAuthProvider;
+use Drupal\kwtsms\Event\OtpRequestEvent;
 use Drupal\kwtsms\Service\KwtsmsGateway;
 use Drupal\kwtsms\Service\PhoneNormalizer;
+use Drupal\kwtsms\Service\SmsLogger;
 use Drupal\kwtsms\Service\TemplateRenderer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Login form that sends a one-time code to the user's phone number.
@@ -36,6 +39,10 @@ class OtpLoginForm extends FormBase {
    *   The template renderer service.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempStoreFactory
    *   The private tempstore factory.
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
+   *   The event dispatcher service.
+   * @param \Drupal\kwtsms\Service\SmsLogger $smsLogger
+   *   The kwtSMS SMS logger service.
    */
   public function __construct(
     private readonly OtpAuthProvider $otpProvider,
@@ -43,6 +50,8 @@ class OtpLoginForm extends FormBase {
     private readonly PhoneNormalizer $phoneNormalizer,
     private readonly TemplateRenderer $templateRenderer,
     private readonly PrivateTempStoreFactory $tempStoreFactory,
+    private readonly EventDispatcherInterface $eventDispatcher,
+    private readonly SmsLogger $smsLogger,
   ) {}
 
   /**
@@ -55,6 +64,8 @@ class OtpLoginForm extends FormBase {
       $container->get('kwtsms.phone_normalizer'),
       $container->get('kwtsms.template_renderer'),
       $container->get('tempstore.private'),
+      $container->get('event_dispatcher'),
+      $container->get('kwtsms.logger'),
     );
   }
 
@@ -135,11 +146,11 @@ class OtpLoginForm extends FormBase {
     }
 
     // Dispatch OTP request event (CAPTCHA integration point).
-    $event = new \Drupal\kwtsms\Event\OtpRequestEvent($phone, 'login', \Drupal::request()->getClientIp() ?? '');
-    \Drupal::service('event_dispatcher')->dispatch($event, \Drupal\kwtsms\Event\OtpRequestEvent::EVENT_NAME);
+    $event = new OtpRequestEvent($phone, 'login', $this->getRequest()->getClientIp() ?? '');
+    $this->eventDispatcher->dispatch($event, OtpRequestEvent::EVENT_NAME);
     if ($event->isBlocked()) {
       // Silently log, don't reveal to user (anti-enumeration).
-      \Drupal::service('kwtsms.logger')->info('OTP request blocked: @reason', ['@reason' => $event->getBlockReason()]);
+      $this->smsLogger->info('OTP request blocked: @reason', ['@reason' => $event->getBlockReason()]);
       // Still show the same neutral message.
     }
 

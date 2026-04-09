@@ -9,6 +9,8 @@ services:
       - '@logger.channel.kwtsms'
       - '@kwtsms.phone_normalizer'
       - '@kwtsms.message_cleaner'
+      - '@datetime.time'
+      - '@kwtsms.logger'
 
   kwtsms.phone_normalizer:
     class: Drupal\kwtsms\Service\PhoneNormalizer
@@ -32,6 +34,7 @@ services:
       - '@database'
       - '@config.factory'
       - '@logger.channel.kwtsms'
+      - '@datetime.time'
 
   kwtsms.otp_provider:
     class: Drupal\kwtsms\Authentication\OtpAuthProvider
@@ -43,6 +46,7 @@ services:
       - '@config.factory'
       - '@entity_type.manager'
       - '@request_stack'
+      - '@datetime.time'
 
   kwtsms.two_factor_manager:
     class: Drupal\kwtsms\Authentication\TwoFactorManager
@@ -67,6 +71,8 @@ services:
       - '@kwtsms.gateway'
       - '@kwtsms.logger'
       - '@database'
+      - '@datetime.time'
+      - '@config.factory'
     tags:
       - { name: event_subscriber }
 
