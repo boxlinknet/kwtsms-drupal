@@ -36,3 +36,22 @@ jobs:
           files: |
             /tmp/kwtsms-${{ steps.version.outputs.version }}.tar.gz
             /tmp/kwtsms-${{ steps.version.outputs.version }}.zip
+
+  mirror:
+    name: Mirror to drupal.org GitLab
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Push branch and tag to drupal.org
+        env:
+          DRUPALORG_TOKEN: ${{ secrets.DRUPALORG_TOKEN }}
+          GIT_TAG_REF: ${{ github.ref }}
+        run: |
+          git remote add drupalorg "https://oauth2:${DRUPALORG_TOKEN}@git.drupalcode.org/project/kwtsms.git"
+          git push drupalorg main --force
+          TAG="${GIT_TAG_REF#refs/tags/v}"
+          git tag "$TAG" HEAD 2>/dev/null || true
+          git push drupalorg "$TAG" --force
