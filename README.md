@@ -11,9 +11,7 @@ SMS gateway integration with [kwtSMS.com](https://www.kwtsms.com) for Drupal 10.
 
 [kwtSMS](https://www.kwtsms.com) is a Kuwait-based SMS gateway providing reliable A2P (Application-to-Person) messaging services. It supports SMS delivery to Kuwait and 200+ countries, with features including sender ID registration, delivery reports for international messages, and a REST/JSON API.
 
-- **Website**: [kwtsms.com](https://www.kwtsms.com)
-- **API Documentation**: [kwtsms.com/developers.html](https://www.kwtsms.com/developers.html)
-- **All Integrations**: [kwtsms.com/integrations.html](https://www.kwtsms.com/integrations.html)
+- **Other Integrations**: [kwtsms.com/integrations.html](https://www.kwtsms.com/integrations.html)
 
 ## Features
 
@@ -151,6 +149,3 @@ See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
 GPL-2.0-or-later. See [LICENSE.txt](LICENSE.txt) for details.
 
-## Maintainers
-
-[kwtSMS](https://www.kwtsms.com)
